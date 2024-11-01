@@ -1,0 +1,13 @@
+
+@media only screen and (max-width: 767px) {
+
+    .inline-margin-top {
+        margin-top: 0 !important;
+    }
+
+}
+
+
+.inline-margin-top {
+    margin-top: 100px;
+}

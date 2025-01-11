@@ -77,7 +77,7 @@
                     </thead>
 
                     <tbody>
-
+ 
                     @foreach($education as $row)
                         <tr>
 

@@ -80,11 +80,15 @@ class EmployerJobs extends Model
     /**
      * @var mixed
      */
-    protected $state;
+    protected $state_id;
     /**
      * @var mixed
      */
-    protected $city;
+    protected $city_id;
+     /**
+     * @var mixed
+     */
+    protected $country_id;
     /**
      * @var mixed
      */
@@ -93,4 +97,41 @@ class EmployerJobs extends Model
      * @var mixed
      */
     protected $gender;
+        /**
+     * @var mixed
+     */
+    protected $skills;
+        /**
+     * @var mixed
+     */
+    protected $benefits;
+        /**
+     * @var mixed
+     */
+    protected $special_requirement;
+        /**
+     * @var mixed
+     */
+    protected $views;
+          /**
+     * @var mixed
+     */
+    protected $url;
+
+
+
+    public function employer()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+
+    public function category(){
+        return $this->belongsTo(BusinessCategory::class);
+    }
+
+    public function applicants()
+{
+    return $this->hasMany(JobApplications::class, 'job_id', 'id');
+}
 }

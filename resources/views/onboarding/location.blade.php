@@ -1,4 +1,4 @@
-@extends('shared.layouts.onboarding')
+{{-- @extends('shared.layouts.onboarding')
 @section('content')
 <style>
     .center-screen {
@@ -61,7 +61,7 @@
         </div>
         @endif
 
-        <form method="post" action="{{ route('updateLocation') }}"  style="color:#000000;">
+        <form  action="{{ route('onboarding.update') }}" method="POST" enctype="multipart/form-data">
             {{ csrf_field() }}
 
             <div class="row">
@@ -165,4 +165,246 @@
     });
 </script>
 
-@endsection
+@endsection --}}
+
+
+
+
+<main class="content-wrapper">
+    <div class="container pt-3 pt-sm-4 pt-md-5 pb-5">
+      <div class="row pt-lg-2 pt-xl-3 pb-1 pb-sm-2 pb-md-3 pb-lg-4 pb-xl-5">
+
+        <!-- Sidebar navigation -->
+        <aside class="col-lg-3 col-xl-4 mb-3" style="margin-top: -100px">
+          <div class="sticky-top overflow-y-auto" style="padding-top: 100px">
+            <ul class="nav flex-lg-column flex-nowrap gap-4 gap-lg-0 text-nowrap pb-2 pb-lg-0">
+              <li class="nat-item">
+                <a class="nav-link d-inline-flex px-0 px-lg-3  disabled" >
+                  <i class="fi-circle fs-lg me-2 "></i>
+                  <i class="fi-arrow-down-circle d-lg-none fs-lg me-2"></i>
+                  {{__('Upload Picture')}}
+                </a>
+              </li>
+              <li class="nat-item">
+                <a class="nav-link d-inline-flex px-0 px-lg-3 disabled" >
+                  <i class="fi-circle fs-lg me-2 "></i>
+                  {{__('About Me')}}
+                </a>
+              </li>
+              <li class="nat-item">
+                <a class="nav-link d-inline-flex px-0 px-lg-3 pe-none " aria-current="page">
+                  <i class="fi-arrow-right-circle d-none d-lg-inline-flex fs-lg me-2"></i>
+                  {{__('Location')}}
+                </a>
+              </li>
+              <li class="nat-item">
+                <a class="nav-link d-inline-flex px-0 px-lg-3 disabled">
+                  <i class="fi-circle fs-lg me-2"></i>
+                  {{__('Category')}}
+                </a>
+              </li>
+              <li class="nat-item">
+                <a class="nav-link d-inline-flex px-0 px-lg-3 disabled">
+                  <i class="fi-circle fs-lg me-2"></i>
+                  {{__('Charge')}}
+                </a>
+              </li>
+              <li class="nat-item">
+                <a class="nav-link d-inline-flex px-0 px-lg-3 disabled">
+                  <i class="fi-circle fs-lg me-2"></i>
+                  {{__('Skills')}}
+                </a>
+              </li>
+              <li class="nat-item">
+                <a class="nav-link d-inline-flex px-0 px-lg-3 disabled">
+                  <i class="fi-circle fs-lg me-2"></i>
+                  {{__('Socials')}}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </aside>
+
+
+        <!-- Property type inputs -->
+        <div class="col-lg-9 col-xl-8">
+
+            @if(session('response'))
+            <div class="notification-alert alert alert-success alert-dismissible fade show" role="alert">
+                {{session('response')}}
+                <button type="button" class="btn btn-primary" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            @endif
+
+
+            <h1 class="h2 pb-1 pb-lg-2">Location</h1>
+            <form id="onboarding-form" action="{{ route('onboarding.update') }}"  method="POST" enctype="multipart/form-data">
+                {{ csrf_field() }}
+
+            <div class="row row-cols-1 row-cols-sm-2 g-3 g-sm-4 pb-3 pb-sm-4 mb-xl-2">
+              <div class="col">
+
+                <label class="form-label">Country *</label>
+                <select class="form-select form-select-lg" data-select="{
+                  &quot;classNames&quot;: {
+                    &quot;containerInner&quot;: [&quot;form-select&quot;, &quot;form-select-lg&quot;]
+                  },
+                  &quot;searchEnabled&quot;: true
+                }" aria-label="Country select" required="" name="country_id" id="country">
+                <option value="">Select your Country</option>
+                  <option value="{{ Auth::user()->country ?? '' }}">{{ ucfirst(strtolower(Auth::user()->countryName->name ?? '')) }}</option>
+                  @foreach (\App\Models\Country::all() as $row)
+                  <option value="{{ $row->id }}">{{ ucfirst(strtolower($row->name)) }}</option>
+              @endforeach
+                </select>
+              </div>
+{{--
+
+              <div class="col">
+                <label class="form-label">State *</label>
+                <select class="form-select form-select-lg" data-select="{
+                  &quot;classNames&quot;: {
+                    &quot;containerInner&quot;: [&quot;form-select&quot;, &quot;form-select-lg&quot;]
+                  },
+                  &quot;searchEnabled&quot;: true
+                }" aria-label="State select" required="" name="state" id="state" >
+                <option value="">Select your State</option>
+                </select>
+              </div> --}}
+
+
+              <div class="col">
+                <label for="state" class="form-label">State *</label>
+                <select name="state_id" id="state" class="form-select form-select-lg"
+                required>
+                    <option value="">Select State</option>
+                </select>
+            </div>
+            </div>
+            <div class="row row-cols-1 row-cols-sm-2 g-3 g-sm-4 pb-3 pb-sm-4 mb-xl-2">
+              <div class="col">
+                <label class="form-label">City *</label>
+                <select class="form-select form-select-lg" required="" id="city" name="city_id" >
+                <option value="">Select your City</option>
+                </select>
+              </div>
+            </div>
+            <div class="pb-4 mb-2">
+              <label for="address" class="form-label">Street address *</label>
+              <input type="text" name="street_address" class="form-control form-control-lg" id="address" value="{{ $street_address ?? '' }}" placeholder="Enter Street address" required="">
+            </div>
+
+            <input type="hidden" name="step" value="location">
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Submit and Next<i class="fi-chevron-right fs-lg ms-1 me-n2"></i></button>
+            </div>
+        </form>
+
+        </div>
+      </div>
+  </main>
+
+
+
+<script src="{{asset('assets/js/jquery.min.js')}}"></script>
+
+
+<script>
+
+$(document).ready(function () {
+    function reinitializeSelect(selector) {
+        const element = document.querySelector(selector);
+        if (element) {
+            // Reinitialize Choices.js (or other select library)
+            if (typeof Choices !== 'undefined') {
+                new Choices(element, {
+                    searchEnabled: true,
+                    classNames: {
+                        containerInner: 'form-select form-select-lg',
+                    },
+                });
+            }
+        }
+    }
+
+
+
+    // Fetch states when country is selected
+    $('select[name=country_id]').change(function () {
+        const countryId = $(this).val();
+        const url = `/onboarding/country/${countryId}/states`;
+
+        if (countryId) {
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    const stateSelect = $('select[name="state_id"]');
+                    stateSelect.empty().append('<option value="">Select State</option>');
+                    data.forEach(function (state) {
+                        stateSelect.append(`<option value="${state.id}">${state.name}</option>`);
+                    });
+
+                    // Reinitialize the state dropdown
+                    reinitializeSelect('#state');
+                },
+                error: function () {
+                    Swal.fire('Error', 'Unable to fetch states. Please try again.', 'error');
+                },
+            });
+        } else {
+            $('select[name="state_id"]').empty().append('<option value="">Select State</option>');
+            $('select[name="city_id"]').empty().append('<option value="">Select City</option>');
+        }
+    });
+
+    // Fetch cities when a state is selected
+    $('select[name=state_id]').change(function () {
+        const stateId = $(this).val();
+        const url = `/onboarding/state/${stateId}/cities`; 
+
+        if (stateId) {
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    const citySelect = $('select[name="city_id"]');
+                    citySelect.empty().append('<option value="">Select City</option>');
+                    data.forEach(function (city) {
+                        citySelect.append(`<option value="${city.id}">${city.name}</option>`);
+                    });
+
+                    // Reinitialize the city dropdown
+                    reinitializeSelect('#city');
+                },
+                error: function () {
+                    Swal.fire('Error', 'Unable to fetch cities. Please try again.', 'error');
+                },
+            });
+        } else {
+            $('select[name="city_id"]').empty().append('<option value="">Select City</option>');
+        }
+    });
+});
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    @if(session('success'))
+        Swal.fire('Success', '{{ session('success') }}', 'success');
+    @elseif($errors->any())
+        Swal.fire('Error', '{{ $errors->first() }}', 'error');
+    @endif
+});
+
+</script>
+
+
+
+

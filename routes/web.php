@@ -4,8 +4,9 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\Home\BookingController;
 use App\Http\Controllers\Home\HomeController;
+use App\Http\Controllers\Employer\EmployerController;
 use App\Http\Controllers\OnboardingController;
-use App\Http\Controllers\User\UserController;   
+use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -24,24 +25,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/upload-profile-image', [OnboardingController::class,'imagesUpload'])->name('upimage')->middleware('auth');
-Route::post('/update-about', [OnboardingController::class,'aboutUpdate'])->name('aboutUpdate')->middleware('auth');
-Route::post('/location-update', [OnboardingController::class,'updateLocation'])->name('updateLocation')->middleware('auth');
-Route::post('/category-update', [OnboardingController::class,'updateCategory'])->name('updateCategory')->middleware('auth');
-Route::post('/charge-update', [OnboardingController::class,'updateCharge'])->name('updateCharge')->middleware('auth');
-Route::post('/skills-update', [OnboardingController::class,'updateSkills'])->name('updateSkills')->middleware('auth');
+// Route::post('/upload-profile-image', [OnboardingController::class,'imagesUpload'])->name('upimage')->middleware('auth');
+// Route::post('/update-about', [OnboardingController::class,'aboutUpdate'])->name('aboutUpdate')->middleware('auth');
+// Route::post('/location-update', [OnboardingController::class,'updateLocation'])->name('updateLocation')->middleware('auth');
+// Route::post('/category-update', [OnboardingController::class,'updateCategory'])->name('updateCategory')->middleware('auth');
+// Route::post('/charge-update', [OnboardingController::class,'updateCharge'])->name('updateCharge')->middleware('auth');
+// Route::post('/skills-update', [OnboardingController::class,'updateSkills'])->name('updateSkills')->middleware('auth');
+
+
+// Route::get('/onboarding', [OnboardingController::class, 'checkOnboarding'])->name('onboarding');
+Route::post('/onboarding/update', [OnboardingController::class, 'update'])->name('onboarding.update');
+Route::get('/onboarding/{step?}', [OnboardingController::class, 'checkOnboarding'])->name('onboarding');
+
+
 
 Route::get('edit-user/{identity}', [AdminController::class, 'editUser'])->name('edit.user')->middleware('auth');
 Route::put('/save-user-details', [AdminController::class, 'storeUserDetails'])->name('save.user.details')->middleware('auth');
 Route::middleware('auth')->group(function () {
-    Route::get('/onboarding/check', [OnboardingController::class, 'checkOnboarding'])->name('onboarding.check');
-
-    Route::get('/onboarding/profile-picture', [OnboardingController::class, 'profilePicture'])->name('onboarding.profile_picture');
-    Route::get('/onboarding/about', [OnboardingController::class, 'about'])->name('onboarding.about');
-    Route::get('/onboarding/location', [OnboardingController::class, 'location'])->name('onboarding.location');
-    Route::get('/onboarding/category', [OnboardingController::class, 'category'])->name('onboarding.category');
-    Route::get('/onboarding/charge', [OnboardingController::class, 'charge'])->name('onboarding.charge');
-    Route::get('/onboarding/skills', [OnboardingController::class, 'skills'])->name('onboarding.skills');
+    Route::get('/onboarding/check', [OnboardingController::class, 'checkOnboarding'])->name('onboarding.check'); 
+    Route::get('/onboarding/country/{id}/states', [OnboardingController::class, 'getStates']);
+    Route::get('/onboarding/state/{id}/cities', [OnboardingController::class, 'getCities']);
+    Route::post('/onboarding/update', [OnboardingController::class, 'update'])->name('onboarding.update');
 });
 
 Route::post('/create-booking', [BookingController::class, 'store'])->name('bookings.store');
@@ -61,6 +65,7 @@ Route::
             Route::group(['middleware' => ['web', 'auth.users', 'auth', 'check.profile'], 'prefix' => 'user'], function () {
                 Route::get('/dashboard', ['uses' => 'User\UserController@getAdminIndex', 'as' => 'user.home']);
                 Route::get('/jobs', ['uses' => 'User\UserController@getJobs', 'as' => 'user.job']);
+               
                 Route::get('/services', ['uses' => 'User\UserController@getMyServices', 'as' => 'user.service']);
                 Route::get('/services/add', ['uses' => 'User\UserController@addServices', 'as' => 'user.service.add']);
                 Route::get('/services/{any}', ['uses' => 'User\UserController@getEditServices', 'as' => 'user.service.edit']);
@@ -76,11 +81,19 @@ Route::
                 Route::get('/profile/awards/add', ['uses' => 'User\UserController@getAwards', 'as' => 'user.profile.awards']);
                 Route::get('/profile/gallery/add', ['uses' => 'User\UserController@getGallery', 'as' => 'user.profile.gallery']);
                 Route::post('/profile/gallery/save', ['uses' => 'User\UserController@UpdateGalleryPhoto', 'as' => 'user.profile.gallery.save']);
-
+                Route::get('/country/{countryId}/states', [UserController::class, 'getStates'])->name('get.states');
+                Route::get('/state/{stateId}/areas', [UserController::class, 'getCities'])->name('get.areas');
                 Route::put('/settings/save', [UserController::class, 'storeUser'])->name('settings.save');
+                Route::delete('/education/{id}', [UserController::class, 'deleteEducation'])->name('education.delete');
+                Route::delete('/experience/{id}', [UserController::class, 'deleteExperience'])->name('experience.delete');
+                Route::delete('/award/{id}', [UserController::class, 'deleteAward'])->name('award.delete');
+              
+
+                Route::get('/country/{id}/states', [UserController::class, 'getStates']);
+                Route::get('/state/{id}/cities', [UserController::class, 'getCities']);
 
                 Route::post('/profile/update/save', ['uses' => 'User\UserController@UpdateGalleryPhoto', 'as' => 'user.profile.update.save']);
-                //Route::post('/profile/basic/update/save', ['uses' => 'User\UserController@updateProfile', 'as' => 'user.basic.profile.update.save']);
+                Route::post('/profile/basic/update/save', ['uses' => 'User\UserController@updateProfile', 'as' => 'user.basic.profile.update.save']);
                 //Route::put('/profile/basic/update/save', ['uses' => 'User\UserController@updateUserProfile', 'as' => 'user.basic.profile.update.save']);
                 Route::post('/profile/education/experience/awards/update/save', ['uses' => 'User\UserController@saveProfileUpdates', 'as' => 'user.additional.profile.update.save']);
                 Route::get('/payment/course/{id}', 'User\UserController@buyCourse');
@@ -111,6 +124,14 @@ Route::delete('/skills/{id}', ['uses' => 'User\UserController@destroySkills', 'a
                 Route::get('/profile/change-password', ['uses' => 'Employer\EmployerController@getChangePassword', 'as' => 'employer.change.password']);
                 Route::post('/profile/password/update', ['uses' => 'Employer\EmployerController@ChangeUserPassword', 'as' => 'employer.settings.password.update']);
                 Route::get('/profile/photo/add', ['uses' => 'Employer\EmployerController@getProfilePhoto', 'as' => 'employer.profile.photo']);
+                
+                Route::post('/profile/update', [EmployerController::class, 'updateProfile'])->name('employer.profile.update');
+                
+
+
+
+                Route::get('/country/{id}/states', [EmployerController::class, 'getStates'])->name('getStates');
+                Route::get('/state/{id}/cities', [EmployerController::class, 'getCities'])->name('getCities');
             });
 
             /**
@@ -186,6 +207,8 @@ Route::post('/skills/create', [AdminController::class, 'createSkill'])->name('ad
             Route::any('faqs', ['uses' => 'Home\HomeController@getFaqs', 'as' => 'index.faqs.us']);
             Route::any('contact-us-now', ['uses' => 'Home\HomeController@storeContactus', 'as' => 'contact.us.now']); /* this is post */
             Route::any('freelancers', ['uses' => 'Home\HomeController@allFreelancers', 'as' => 'index.freelancers.list']);
+
+           // Route::get('freelancers', [HomeController::class, 'loadMoreFreelancers'])->name('index.freelancers.list');
             Route::get('state/{state}/areas', ['uses' => 'Home\HomeController@getStates', 'as' => 'index.job.list.location']);
             Route::any('services/all', ['uses' => 'Home\HomeController@allServices', 'as' => 'index.services.list']);
             Route::any('service-category/{url}', ['uses' => 'Home\HomeController@allServicesByURL', 'as' => 'index.services.list.category']);
@@ -194,6 +217,9 @@ Route::post('/skills/create', [AdminController::class, 'createSkill'])->name('ad
             Route::post('/change-currency', [CurrencyController::class, 'changeCurrency'])->name('changeCurrency');
 
             Route::post('request/freelancers', ['uses' => 'Home\HomeController@sendFreelancersRequest', 'as' => 'freelancers.now']);
+            Route::get('/jobs', [HomeController::class, 'jobs'])->name('index.jobs');
+            Route::get('/jobs/filter', [HomeController::class, 'filterJobs'])->name('jobs.filter');
+            Route::get('/job/{url}', [HomeController::class, 'showJobDetails'])->name('job.detail');
 
             Route::post('freelancer/review/save', ['uses' => 'Home\HomeController@StoreReviewsFreelancer', 'as' => 'freelancer.review.save']);
             Route::post('services/review/save', ['uses' => 'Home\HomeController@StoreReviewsService', 'as' => 'index.review.save']);
@@ -202,8 +228,8 @@ Route::post('/skills/create', [AdminController::class, 'createSkill'])->name('ad
             Route::get('staffing/solutions/employer', ['uses' => 'Home\HomeController@getEmployerForm', 'as' => 'index.staffing.employer']);
             Route::post('staffing/solutions/employer/save', ['uses' => 'Home\HomeController@saveEmployerForm', 'as' => 'index.staffing.employer.save']);
 
-            Route::get('staffing/solutions/job/application', ['uses' => 'Home\HomeController@getJobApplicationForm', 'as' => 'index.staffing.job']);
-            Route::post('staffing/solutions/job/application/save', ['uses' => 'Home\HomeController@saveJobApplication', 'as' => 'index.staffing.job.save']);
+            Route::get('/job/{url}/apply', ['uses' => 'Home\HomeController@getJobApplicationForm', 'as' => 'job.apply.form']);
+            Route::post('/staffing/solutions/job/application/save', ['uses' => 'Home\HomeController@saveJobApplication', 'as' => 'job.application.save']);
 
             Route::get('register', ['uses' => 'Home\HomeController@register', 'as' => 'index.register']);
             Route::post('register/step/one/save', ['uses' => 'Home\HomeController@registerAsArtisan2', 'as' => 'index.register.artisan.one']);
@@ -211,8 +237,12 @@ Route::post('/skills/create', [AdminController::class, 'createSkill'])->name('ad
 
             Route::post('createUser', [HomeController::class, 'createUser'])->name('createUser');
 
-            Route::get('country/{state}/states', ['uses' => 'Home\HomeController@getStates', 'as' => 'index.job.list.location.country']);
-            Route::get('state/{state}/areas', ['uses' => 'Home\HomeController@getStatesAreas', 'as' => 'index.job.list.location']);
+            // Route::get('country/{state}/states', ['uses' => 'Home\HomeController@getStates', 'as' => 'index.job.list.location.country']);
+            // Route::get('state/{state}/areas', ['uses' => 'Home\HomeController@getStatesAreas', 'as' => 'index.job.list.location']);
+
+            Route::get('country/{id}/states', [HomeController::class, 'getStates']);
+            Route::get('state/{id}/cities', [HomeController::class, 'getCities']);
+
 
 
             Route::get('account/login', ['uses' => 'Home\HomeController@getLogin', 'as' => 'login']);

@@ -3,7 +3,7 @@
 @section('content')
 
 
-    <div id="apus-main-content">
+    {{-- <div id="apus-main-content">
         <section id="main-container" class="page-service-board inner layout-type-default has-filter-top inline-margin-top">
 
             <div class="freelancers-top-content-wrapper" style="margin-bottom: 0px !important; height:150px;">
@@ -73,13 +73,13 @@
                                                                     @php
                                                                         $imagePath = 'artisan_services/photo/' . $rw->user_id . '/' . $rw->feature_image;
                                                                     @endphp
-                                                                    
+
                                                                     @if(!empty($rw->feature_image) && file_exists(public_path($imagePath)))
-                                                                        <img loading="lazy" decoding="async" width="495" height="370" 
-                                                                             src="{{ asset($imagePath) }}" 
-                                                                             class="attachment-freeio-listing-grid size-freeio-listing-grid" 
-                                                                             alt="" 
-                                                                             srcset="{{ asset($imagePath) }} 495w, {{ asset($imagePath) }} 300w, {{ asset($imagePath) }} 768w, {{ asset($imagePath) }} 600w" 
+                                                                        <img loading="lazy" decoding="async" width="495" height="370"
+                                                                             src="{{ asset($imagePath) }}"
+                                                                             class="attachment-freeio-listing-grid size-freeio-listing-grid"
+                                                                             alt=""
+                                                                             srcset="{{ asset($imagePath) }} 495w, {{ asset($imagePath) }} 300w, {{ asset($imagePath) }} 768w, {{ asset($imagePath) }} 600w"
                                                                              sizes="(max-width: 295px) 100vw, 495px">
                                                                     @else
                                                                         <a href="#"><img src="{{ asset('services.png') }}" alt="image"></a>
@@ -96,7 +96,7 @@
                                                         <h2 class="service-title">
 
                                                             <a href="{{url('service/'.$rw->url)}}" rel="bookmark">{{$rw->title}}</a>
-                                                            
+
                                                         </h2>
                                                         <div class="rating-reviews">
                                                             <i class="fa fa-star"></i>
@@ -112,7 +112,7 @@
                                                                             @php
                                                                                 $imagePath = 'profile/photo/' . $rw->user_id . '/' . $rw->profile_image;
                                                                             @endphp
-                                                                            
+
                                                                             @if(!empty($rw->profile_image) && file_exists(public_path($imagePath)))
                                                                                 <img decoding="async" width="150" height="150"
                                                                                      src="{{ asset($imagePath) }}"
@@ -161,7 +161,10 @@
                 </div>
             </div>
         </section>
-    </div><!-- .site-content -->
+    </div><!-- .site-content --> --}}
+
+
+
 
 
     <div class="container pt-4 pb-5 mb-xxl-3">
@@ -174,31 +177,57 @@
           </ol>
         </nav>
 
-       
+
 
         @if(!empty($category_title))
         <h1 class="h2 pb-lg-2">All Services ( {{$category_title}} )</h1>
-        
+
         @else
         <h1 class="h2 pb-lg-2">All Services</h1>
-       
+
         @endif
 
         <div class="row align-items-center g-3 gx-xl-4 mb-3 mb-sm-4">
-            <div class="col-md-5 col-lg-10">
+            <div class="col-md-5 col-lg-12">
               <div class="position-relative">
-                <form class="bg-white border rounded-4 p-2 mb-4 mb-md-5" data-bs-theme="light">
+                <form class="bg-white border rounded-4 p-2 mb-4 mb-md-5" data-bs-theme="light" action="{{ route('changeCurrency') }}" method="POST">
+                    @csrf
+
                     <div class="d-flex flex-column flex-md-row gap-3 p-1">
                       <div class="d-flex flex-column flex-sm-row w-100 gap-2 gap-sm-3">
                         <div class="position-relative w-100">
                           <i class="fi-search position-absolute top-50 start-0 translate-middle-y fs-xl text-secondary-emphasis ms-2"></i>
-                          <input type="search" class="form-control form-control-lg form-icon-start border-0 rounded-0 pe-0" placeholder="What service do you need?" required="">
+                          <select class="form-select form-select-lg form-icon-start border-0" name="job_category" data-select="{
+                            &quot;classNames&quot;: {
+                              &quot;containerInner&quot;: [&quot;form-select&quot;, &quot;form-select-lg&quot;, &quot;form-icon-start&quot;, &quot;border-0&quot;]
+                            },
+                            &quot;searchEnabled&quot;: true
+                          }" aria-label="Location select" >
+
+                            <option value="">Select Service Category</option>
+                            @foreach (\App\Models\BusinessCategory::all() as $row)
+                            <option value="{{ $row->id }}">{{ $row->title }}</option>
+                            @endforeach
+
+
+                          </select>
                         </div>
                         <hr class="d-sm-none m-0">
                         <hr class="vr d-none d-sm-block my-2">
                         <div class="position-relative w-100" style="max-width: 150px">
                           <i class="fi-user position-absolute top-50 start-0 translate-middle-y fs-xl text-secondary-emphasis ms-2"></i>
-                          <input type="text" class="form-control form-control-lg form-icon-start border-0 rounded-0 pe-0" placeholder="Z" required="">
+                          <select class="form-select form-select-lg form-icon-start border-0" name="filter-gender" data-select="{
+                            &quot;classNames&quot;: {
+                              &quot;containerInner&quot;: [&quot;form-select&quot;, &quot;form-select-lg&quot;, &quot;form-icon-start&quot;, &quot;border-0&quot;]
+                            },
+                            &quot;searchEnabled&quot;: true
+                          }" aria-label="Location select" >
+                            <option value="">Gender</option>
+                            <option value="Both">Both</option>
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+
+                          </select>
                         </div>
                       </div>
                       <button type="submit" class="btn btn-lg btn-primary">Search</button>
@@ -211,7 +240,7 @@
           </div>
 
           <div class="d-flex align-items-center gap-2 gap-sm-3 mb-3 mb-sm-4">
-            <div class="fs-sm text-nowrap"><span class="d-none d-sm-inline">Showing </span>73 results</div>
+            <div class="fs-sm text-nowrap"><span class="d-none d-sm-inline">Showing </span>{{$artisan_services->count()}} results</div>
             <div class="fs-sm fw-semibold text-dark-emphasis ms-auto d-none d-sm-inline">Sort by:</div>
             <div class="position-relative ms-auto ms-sm-0" style="width: 140px">
               <i class="fi-sort position-absolute top-50 start-0 translate-middle-y z-2"></i>
@@ -235,6 +264,134 @@
                 <i class="fi-list"></i>
               </a>
             </div>
+          </div>
+
+
+          <div class="row pt-md-2 pt-lg-3 pb-2 pb-sm-3 pb-md-4 pb-lg-5">
+            <div class="col-lg-12">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-2 row-cols-xl-3 g-4 g-sm-3 g-lg-4">
+                <div class="col">
+                    @foreach($artisan_services as $rw)
+                    <article class="card h-100 hover-effect-scale bg-body-tertiary border-0">
+                      <div class="card-img-top position-relative overflow-hidden">
+                        <div class="d-flex flex-column gap-2 align-items-start position-absolute top-0 start-0 z-1 pt-1 pt-sm-0 ps-1 ps-sm-0 mt-2 mt-sm-3 ms-2 ms-sm-3">
+                          <span class="badge text-bg-info d-inline-flex align-items-center">
+                            Verified
+                            <i class="fi-shield ms-1"></i>
+                          </span>
+                          <span class="badge text-bg-warning">Used</span>
+                        </div>
+                        <div class="ratio hover-effect-target bg-body-secondary" style="--fn-aspect-ratio: calc(204 / 306 * 100%)">
+                            @php
+                                 $imagePath = 'artisan_services/photo/' . $rw->user_id . '/' . $rw->feature_image;
+                                @endphp
+                          {{-- <img src="assets/img/listings/cars/grid/01.jpg" alt="Image"> --}}
+                          @if(!empty($rw->feature_image) && file_exists(public_path($imagePath)))
+                          <img src="{{ asset($imagePath) }}" class="hover-effect-target position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Image">
+                            @else
+                            <img src="asset/img/listings/cars/list/01.jpg" class="hover-effect-target position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Image">
+                            @endif
+                        </div>
+                      </div>
+                      <div class="card-body pb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                          {{-- <div class="fs-xs text-body-secondary me-3">
+                            <a href="{{url('/user/'.$rw->user->identity)}}">{{ ucwords($rw->full_name) }}</a></div> --}}
+                            <div class="d-flex align-items-center pe-5 pe-lg-0 pb-2 mb-1">
+                                <div class="ratio ratio-1x1 me-3" style="width: 38px">
+                                    @php
+                                        $imagePath = 'profile/photo/' . $rw->user_id . '/' . $rw->profile_image;
+                                    @endphp
+
+                                    @if(!empty($rw->profile_image) && file_exists(public_path($imagePath)))
+                                    <img src="{{ asset($imagePath) }}" class="bg-body-secondary rounded-circle" alt="{{ ucwords($rw->full_name) }}" srcset="{{ asset($imagePath) }}">
+                                    @else
+                                    <img src="{{ asset('asset/ava.jpg') }}" class="bg-body-secondary rounded-circle" alt="{{ ucwords($rw->full_name) }}" srcset="{{ asset($imagePath) }}">
+                                    @endif
+
+
+                                  
+                                </div>
+                                <h3 class="h6 mb-0">
+                                  <a class="hover-effect-underline stretched-link fs-sm" href="{{url('/user/'.$rw->user->identity)}}">{{ ucwords($rw->full_name) }}</a>
+                                </h3>
+                              </div>
+
+                          <div class="d-flex  position-relative z-2 mb-0">
+                            
+                                <i class="fi-star-filled fs-xl text-warning me-2 mb-2"> </i>
+                                <span class="rating">{{\App\Helpers\CommonHelpers::rating($rw->id)}}.0</span>
+                                <span class="text">({{\App\Models\ServiceRating::query()->where('service_id', $rw->id)->count()}} Reviews)</span>
+
+                           
+                            {{-- <button type="button" class="btn btn-icon btn-sm btn-outline-secondary animate-shake rounded-circle" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-sm" title="Notify" aria-label="Notify">
+                              <i class="fi-bell animate-target fs-sm"></i>
+                            </button>
+                            <button type="button" class="btn btn-icon btn-sm btn-outline-secondary animate-rotate rounded-circle" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-sm" title="Compare" aria-label="Compare">
+                              <i class="fi-repeat animate-target fs-sm"></i>
+                            </button> --}}
+                          </div>
+                        </div>
+                        <h3 class="h6 mb-2">
+                          <a class=" stretched-link me-1" href="{{url('service/'.$rw->url)}} "> {{$rw->title}}</a>
+                          <span class="fs-xs fw-normal text-body-secondary">({{ $rw->created_at->format('Y') }})</span>
+                        </h3>
+                        <div class="h6 mb-0">
+                            {{ $currencySymbols[$currency] }} 
+                            @if ($currencySymbols[$currency] == '$')
+                            {{ $rw->cost}} / {{ $rw->per_service}} 
+                            @elseif($currencySymbols[$currency] == '₦')
+                            {{ $rw->cost}} / {{ $rw->per_service}} 
+                            @elseif($currencySymbols[$currency] == '£')
+                            {{ $rw->cost}} / {{ $rw->per_service}} 
+                            @elseif($currencySymbols[$currency] == '€')
+                            {{ $rw->cost}} / {{ $rw->per_service}} 
+                        @endif
+                        </div>
+                      </div>
+                      <div class="card-footer bg-transparent border-0 pt-0 pb-4">
+                        <div class="border-top pt-3">
+                          <div class="row row-cols-2 g-2 fs-sm">
+                            <div class="col d-flex align-items-center gap-2">
+                              <i class="fi-map-pin"></i>
+                              {{ $rw->city}} {{ $rw->state}}
+                            </div>
+                            <div class="col d-flex align-items-center gap-2">
+                              <i class="fi-tachometer"></i>
+                              78K mi
+                            </div>
+                            <div class="col d-flex align-items-center gap-2">
+                              <i class="fi-gas-pump"></i>
+                              Diesel
+                            </div>
+                            <div class="col d-flex align-items-center gap-2">
+                              <i class="fi-gearbox"></i>
+                              Automatic
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                    @endforeach
+                  </div>
+
+
+
+                </div>
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
           </div>
 
 

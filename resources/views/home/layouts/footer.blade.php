@@ -7,7 +7,7 @@
 
 
 
-<section class="bg-body-tertiary overflow-hidden pt-5">
+{{-- <section class="bg-body-tertiary overflow-hidden pt-5">
     <div class="container">
       <div class="row align-items-center justify-content-center justify-content-md-start">
         <div class="col-md-6 col-lg-5 offset-lg-1 text-center text-md-start mt-lg-n5 pt-2 py-md-3 py-lg-0 mb-5 mb-lg-0">
@@ -47,7 +47,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> --}}
 
 </main>
 
@@ -78,7 +78,7 @@
         </div>
       </div>
 
-     
+
 
       <!-- Contact link + Copyright -->
       <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between pb-4 pt-3 pt-sm-2 pt-md-3 pt-lg-4">
@@ -105,268 +105,204 @@
         <rect x=".75" y=".75" width="60.5" height="30.5" rx="15.25" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"></rect>
       </svg>
     </a>
-  
+
   </div>
 
 
+  <script>
 
-<!-- .site -->
-
-
-<script src="{{asset('assets/js/jquery.min.js')}}"></script>
-
-<script>
-    $(function() {
-        $('select[name=country]').change(function() {
-            const option = document.getElementById("country").value;
-            const url = '{{ url('country') }}' +'/'+ option + '/states';
-
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                success:function(data) {
-                    $('select[name="state"]').empty();
-                    $.each(data, function(key, value) {
-                        $('select[name="state"]').append('<option value="'+ value.id +'">'+ value.name +'</option>');
-                    });
-                }
+document.addEventListener('DOMContentLoaded', function () {
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session('success') }}',
+                confirmButtonText: 'OK',
             });
-        });
+        @endif
 
-        $('select[name=state]').change(function() {
-            const option = document.getElementById("state").value;
-            const url = '{{ url('state') }}' +'/'+ option + '/areas';
-
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                success:function(data) {
-                    $('select[name="state_area"]').empty();
-                    $.each(data, function(key, value) {
-                        $('select[name="state_area"]').append('<option value="'+ value.id +'">'+ value.name +'</option>');
-                    });
-                }
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+                confirmButtonText: 'OK',
             });
-        });
-
+        @endif
     });
 
-</script>
 
-<script>
-    $(function() {
-        $('select[name=country_ep]').change(function() {
-            const option = document.getElementById("country_ep").value;
-            const url = '{{ url('country') }}' +'/'+ option + '/states';
+    // document.getElementById('applyJobBtn').addEventListener('click', function (event) {
+    //     event.preventDefault(); // Prevent default link behavior
 
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                success:function(data) {
-                    $('select[name="state_ep"]').empty();
-                    $.each(data, function(key, value) {
-                        $('select[name="state_ep"]').append('<option value="'+ value.id +'">'+ value.name +'</option>');
-                    });
-                }
-            });
-        });
+    //     const isLoggedIn = this.getAttribute('data-logged-in') === 'true'; // Check login status
+    //     const isApplied = this.getAttribute('data-applied') === 'true'; // Check if already applied
+    //     const applyUrl = this.getAttribute('href'); // Get the application URL
+    //     const loginUrl = this.getAttribute('data-login-url'); // Get the login URL
 
-        $('select[name=state_ep]').change(function() {
-            const option = document.getElementById("state_ep").value;
-            const url = '{{ url('state') }}' +'/'+ option + '/areas';
+    //     if (!isLoggedIn) {
+    //         // If not logged in, redirect to login with SweetAlert prompt
+    //         Swal.fire({
+    //             title: 'Login Required',
+    //             text: "You need to log in to apply for this job.",
+    //             icon: 'warning',
+    //             showCancelButton: true,
+    //             confirmButtonColor: '#3085d6',
+    //             cancelButtonColor: '#d33',
+    //             confirmButtonText: 'Login',
+    //             cancelButtonText: 'Cancel'
+    //         }).then((result) => {
+    //             if (result.isConfirmed) {
+    //                 window.location.href = loginUrl; // Redirect to login
+    //             }
+    //         });
+    //     } else if (isApplied) {
+    //         // If already applied, show SweetAlert and prevent redirection
+    //         Swal.fire({
+    //             title: 'Already Applied',
+    //             text: "You've already applied for this job!",
+    //             icon: 'info',
+    //             confirmButtonText: 'OK'
+    //         });
+    //     } else {
+    //         // If eligible to apply, show confirmation prompt
+    //         Swal.fire({
+    //             title: 'Apply for Job',
+    //             text: "Are you sure you want to apply for this job?",
+    //             icon: 'info',
+    //             showCancelButton: true,
+    //             confirmButtonColor: '#3085d6',
+    //             cancelButtonColor: '#d33',
+    //             confirmButtonText: 'Yes, Apply!',
+    //             cancelButtonText: 'Cancel'
+    //         }).then((result) => {
+    //             if (result.isConfirmed) {
+    //                 // Redirect to the application form
+    //                 window.location.href = applyUrl;
+    //             }
+    //         });
+    //     }
+    // });
 
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                success:function(data) {
-                    $('select[name="state_area_ep"]').empty();
-                    $.each(data, function(key, value) {
-                        $('select[name="state_area_ep"]').append('<option value="'+ value.id +'">'+ value.name +'</option>');
-                    });
-                }
-            });
-        });
-
+    window.addEventListener('load', () => {
+        const preloader = document.getElementById('preloader');
+        preloader.style.opacity = '0';
+        setTimeout(() => {
+            preloader.style.display = 'none';
+        }, 100); // Delay to allow fade-out effect
     });
 
-</script>
 
-<script>
-    window.RS_MODULES = window.RS_MODULES || {};
-    window.RS_MODULES.modules = window.RS_MODULES.modules || {};
-    window.RS_MODULES.waiting = window.RS_MODULES.waiting || [];
-    window.RS_MODULES.defered = true;
-    window.RS_MODULES.moduleWaiting = window.RS_MODULES.moduleWaiting || {};
-    window.RS_MODULES.type = 'compiled';
-</script>
-<script type='text/javascript'>
-    const lazyloadRunObserver = () => {
-        const lazyloadBackgrounds = document.querySelectorAll( `.e-con.e-parent:not(.e-lazyloaded)` );
-        const lazyloadBackgroundObserver = new IntersectionObserver( ( entries ) => {
-            entries.forEach( ( entry ) => {
-                if ( entry.isIntersecting ) {
-                    let lazyloadBackground = entry.target;
-                    if( lazyloadBackground ) {
-                        lazyloadBackground.classList.add( 'e-lazyloaded' );
+    // Configure AJAX globally
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token for Laravel
+        },
+        error: function (xhr, status, error) {
+            // Handle global AJAX errors
+            console.error('AJAX Error:', xhr.responseJSON || error);
+            alert('Something went wrong. Please try again.');
+        }
+    });
+
+    $(document).ready(function () {
+        // Fetch states when country changes
+        $('#country').on('change', function () {
+            const countryId = $(this).val();
+            if (countryId) {
+                $.ajax({
+                    url: `/country/${countryId}/states`, // AJAX endpoint to fetch states
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('States fetched:', data); // Debug fetched data
+                        const stateDropdown = $('#state');
+                        stateDropdown.empty().append('<option value="">Select State</option>');
+                        $.each(data, function (index, state) {
+                            stateDropdown.append(`<option value="${state.id}">${state.name}</option>`);
+                        });
+                        $('#city').empty().append('<option value="">Select City</option>'); // Reset city dropdown
                     }
-                    lazyloadBackgroundObserver.unobserve( entry.target );
-                }
-            });
-        }, { rootMargin: '200px 0px 200px 0px' } );
-        lazyloadBackgrounds.forEach( ( lazyloadBackground ) => {
-            lazyloadBackgroundObserver.observe( lazyloadBackground );
-        } );
-    };
-    const events = [
-        'DOMContentLoaded',
-        'elementor/lazyload/observe',
-    ];
-    events.forEach( ( event ) => {
-        document.addEventListener( event, lazyloadRunObserver );
-    } );
-</script>
-<script type='text/javascript'>
-    (function () {
-        var c = document.body.className;
-        c = c.replace(/woocommerce-no-js/, 'woocommerce-js');
-        document.body.className = c;
-    })();
-</script>
-<link rel='stylesheet' id='wc-blocks-style-css' href='{{asset("home-assets/plugins/woocommerce/assets/client/blocks/wc-blocksff95.css?ver=wc-8.8.2")}}' type='text/css' media='all' />
-<link rel='stylesheet' id='elementor-post-5260-css' href='{{asset("home-assets/uploads/elementor/css/post-52601609.css?ver=1713967228")}}' type='text/css' media='all' />
-<link rel='stylesheet' id='elementor-post-3219-css' href='{{asset("home-assets/uploads/elementor/css/post-3219eabb.css?ver=1713967302")}}' type='text/css' media='all' />
-<link rel='stylesheet' id='wpfi-select2-css' href='{{asset("home-assets/plugins/wp-freeio/assets/js/select2/select2.min631d.css?ver=4.0.5")}}' type='text/css' media='all' />
-<link rel='stylesheet' id='elementor-post-4229-css' href='{{asset("home-assets/uploads/elementor/css/post-4229eabb.css?ver=1713967302")}}' type='text/css' media='all' />
-<link rel='stylesheet' id='e-animations-css' href='{{asset("home-assets/plugins/elementor/assets/lib/animations/animations.min08e6.css?ver=3.21.2")}}' type='text/css' media='all' />
-<link rel='stylesheet' id='elementor-icons-fa-brands-css' href='{{asset("home-assets/plugins/elementor/assets/lib/font-awesome/css/brands.min52d5.css?ver=5.15.3")}}' type='text/css' media='all' />
-<link rel='stylesheet' id='rs-plugin-settings-css' href='{{asset("home-assets/plugins/revslider/public/assets/css/rs653aa.css?ver=6.6.19")}}' type='text/css' media='all' />
-<style id='rs-plugin-settings-inline-css' type='text/css'>
-    #rs-demo-id {}
-</style>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/bootstrap.bundle.mince52.js?ver=5.0.2")}}" id="bootstrap-bundle-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/slick.minee8b.js?ver=1.8.0")}}" id="slick-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/jquery.magnific-popup.minf488.js?ver=1.1.0")}}" id="jquery-magnific-popup-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/jquery.unveilf488.js?ver=1.1.0")}}" id="jquery-unveil-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/perfect-scrollbar.jquery.min91ce.js?ver=1.5.0")}}" id="perfect-scrollbar-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/sliding-menu.min9d8e.js?ver=0.3.0")}}" id="sliding-menu-js"></script>
-<script type="text/javascript" id="freeio-functions-js-extra">
-    /* <![CDATA[ */
-    var freeio_opts = {"ajaxurl":"http:\/\/swiftedgeacademy.com\/","previous":"Previous","next":"Next","menu_back_text":"Back"};
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/functions8337.js?ver=20150330")}}" id="freeio-functions-js"></script>
-<script type="text/javascript" id="freeio-functions-js-after">
-    /* <![CDATA[ */
-    (function(html){html.className = html.className.replace(/\bno-js\b/,'js')})(document.documentElement);
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/contact-form-7/includes/swv/js/index7404.js?ver=5.9.3")}}" id="swv-js"></script>
-<script type="text/javascript" id="contact-form-7-js-extra">
-    /* <![CDATA[ */
-    var wpcf7 = {"api":{"root":"http:\/\/swiftedgeacademy.com\/wp-json\/","namespace":"contact-form-7\/v1"},"cached":"1"};
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/contact-form-7/includes/js/index7404.js?ver=5.9.3")}}" id="contact-form-7-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/revslider/public/assets/js/rbtools.min53aa.js?ver=6.6.19")}}" defer async id="tp-tools-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/revslider/public/assets/js/rs6.min53aa.js?ver=6.6.19")}}" defer async id="revmin-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min5d2d.js?ver=8.8.2")}}" id="sourcebuster-js-js"></script>
-<script type="text/javascript" id="wc-order-attribution-js-extra">
-    /* <![CDATA[ */
-    var wc_order_attribution = {"params":{"lifetime":1.0e-5,"session":30,"ajaxurl":"http:\/\/swiftedgeacademy.com\/hub\/wp-admin\/admin-ajax.php","prefix":"wc_order_attribution_","allowTracking":true},"fields":{"source_type":"current.typ","referrer":"current_add.rf","utm_campaign":"current.cmp","utm_source":"current.src","utm_medium":"current.mdm","utm_content":"current.cnt","utm_id":"current.id","utm_term":"current.trm","session_entry":"current_add.ep","session_start_time":"current_add.fd","session_pages":"session.pgs","session_count":"udata.vst","user_agent":"udata.uag"}};
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/woocommerce/assets/js/frontend/order-attribution.min5d2d.js?ver=8.8.2")}}" id="wc-order-attribution-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/wp-freeio/assets/js/magnific/jquery.magnific-popup.minf488.js?ver=1.1.0")}}" id="magnific-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/js/jquery/ui/core.min3f14.js?ver=1.13.2")}}" id="jquery-ui-core-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/js/jquery/ui/mouse.min3f14.js?ver=1.13.2")}}" id="jquery-ui-mouse-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/js/jquery/ui/slider.min3f14.js?ver=1.13.2")}}" id="jquery-ui-slider-js"></script>
+                });
+            } else {
+                $('#state').empty().append('<option value="">Select State</option>');
+                $('#city').empty().append('<option value="">Select City</option>');
+            }
+        });
 
-<script type="text/javascript" id="wp-private-message-main-js-extra">
-    /* <![CDATA[ */
-    var wp_private_message_opts = {"ajaxurl":"http:\/\/swiftedgeacademy.com\/hub\/wp-admin\/admin-ajax.php"};
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/wp-freeio/assets/js/jquery.ui.touch-punch.min8337.js?ver=20150330")}}" id="jquery-ui-touch-punch-js"></script>
-
-<script type="text/javascript" src="{{asset("home-assets/plugins/wp-freeio/assets/js/main6a41.js?ver=20131022")}}" id="wp-freeio-main-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/wp-private-message/assets/js/perfect-scrollbar.jquery.min246c.js?ver=0.6.10")}}" id="perfect-scrollbar-jquery-js"></script>
-
-<script type="text/javascript" src="{{asset("home-assets/plugins/wp-private-message/assets/js/main6a41.js?ver=20131022")}}" id="wp-private-message-main-js"></script>
-<script type="text/javascript" id="freeio-woocommerce-js-extra">
-    /* <![CDATA[ */
-    var freeio_woo_options = {"ajaxurl":"http:\/\/swiftedgeacademy.com\/hub\/wp-admin\/admin-ajax.php","view_more_text":"View More","view_less_text":"View Less"};
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/woocommerce8337.js?ver=20150330")}}" id="freeio-woocommerce-js"></script>
-<script type="text/javascript" src={{asset("home-assets/plugins/wp-freeio/assets/js/jquery.highlightb52e.js?ver=5")}}" id="jquery-highlight-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/wp-freeio/assets/js/leaflet/leafletcc1a.js?ver=1.5.1")}}" id="leaflet-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/wp-freeio/assets/js/leaflet/Control.Geocodercc1a.js?ver=1.5.1")}}" id="control-geocoder-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/wp-freeio/assets/js/leaflet/leaflet.markerclustercc1a.js?ver=1.5.1")}}" id="leaflet-markercluster-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/wp-freeio/assets/js/leaflet/LeafletHtmlIconcc1a.js?ver=1.5.1")}}" id="leaflet-HtmlIcon-js"></script>
-<script type="text/javascript" id="freeio-job-js-extra">
-    /* <![CDATA[ */
-    var freeio_job_opts = {"ajaxurl":"http:\/\/swiftedgeacademy.com\/hub\/wp-admin\/admin-ajax.php","empty_msg":"Unable to find any listing that match the currenty query","show":"Show","hide":"Hide"};
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/job8337.js?ver=20150330")}}" id="freeio-job-js"></script>
-<script type="text/javascript" id="freeio-job-map-js-extra">
-    /* <![CDATA[ */
-    var freeio_job_map_opts = {"map_service":"mapbox","mapbox_token":"","mapbox_style":"streets-v11","here_map_api_key":"","here_style":"","custom_style":"","default_latitude":"43.6568","default_longitude":"-79.4512","default_pin":""};
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/job-map8337.js?ver=20150330")}}" id="freeio-job-map-js"></script>
-<script type="text/javascript" id="wpfi-select2-js-extra">
-    /* <![CDATA[ */
-    var wp_freeio_select2_opts = {"width":"100%","language_result":"No Results Found","formatInputTooShort_text":"Please enter 2 or more characters"};
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/wp-freeio/assets/js/select2/select2.min631d.js?ver=4.0.5")}}" id="wpfi-select2-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/handlebars.min.js")}}" id="handlebars-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/themes/freeio/js/typeahead.bundle.min.js")}}" id="typeahead-jquery-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/elementor/assets/js/webpack.runtime.min08e6.js?ver=3.21.2")}}" id="elementor-webpack-runtime-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/elementor/assets/js/frontend-modules.min08e6.js?ver=3.21.2")}}" id="elementor-frontend-modules-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/elementor/assets/lib/waypoints/waypoints.min05da.js?ver=4.0.2")}}" id="elementor-waypoints-js"></script>
-<script type="text/javascript" id="elementor-frontend-js-before">
-    /* <![CDATA[ */
-    var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false,"isScriptDebug":false},"i18n":{"shareOnFacebook":"Share on Facebook","shareOnTwitter":"Share on Twitter","pinIt":"Pin it","download":"Download","downloadImage":"Download image","fullscreen":"Fullscreen","zoom":"Zoom","share":"Share","playVideo":"Play Video","previous":"Previous","next":"Next","close":"Close","a11yCarouselWrapperAriaLabel":"Carousel | Horizontal scrolling: Arrow Left & Right","a11yCarouselPrevSlideMessage":"Previous slide","a11yCarouselNextSlideMessage":"Next slide","a11yCarouselFirstSlideMessage":"This is the first slide","a11yCarouselLastSlideMessage":"This is the last slide","a11yCarouselPaginationBulletMessage":"Go to slide"},"is_rtl":false,"breakpoints":{"xs":0,"sm":480,"md":768,"lg":1025,"xl":1440,"xxl":1600},"responsive":{"breakpoints":{"mobile":{"label":"Mobile Portrait","value":767,"default_value":767,"direction":"max","is_enabled":true},"mobile_extra":{"label":"Mobile Landscape","value":880,"default_value":880,"direction":"max","is_enabled":false},"tablet":{"label":"Tablet Portrait","value":1024,"default_value":1024,"direction":"max","is_enabled":true},"tablet_extra":{"label":"Tablet Landscape","value":1200,"default_value":1200,"direction":"max","is_enabled":false},"laptop":{"label":"Laptop","value":1366,"default_value":1366,"direction":"max","is_enabled":false},"widescreen":{"label":"Widescreen","value":2400,"default_value":2400,"direction":"min","is_enabled":false}}},"version":"3.21.2","is_static":false,"experimentalFeatures":{"e_optimized_assets_loading":true,"e_optimized_css_loading":true,"additional_custom_breakpoints":true,"container":true,"e_swiper_latest":true,"container_grid":true,"home_screen":true,"ai-layout":true,"landing-pages":true,"e_lazyload":true},"urls":{"assets":"http:\/\/swiftedgeacademy.com\/hub\/home-assets\/plugins\/elementor\/assets\/"},"swiperClass":"swiper","settings":{"page":[],"editorPreferences":[]},"kit":{"active_breakpoints":["viewport_mobile","viewport_tablet"],"global_image_lightbox":"yes","lightbox_enable_counter":"yes","lightbox_enable_fullscreen":"yes","lightbox_enable_zoom":"yes","lightbox_enable_share":"yes","lightbox_title_src":"title","lightbox_description_src":"description"},"post":{"id":29,"title":"Home%203%20-%20TheVAHUB","excerpt":"","featuredImage":false}};
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/elementor/assets/js/frontend.min08e6.js?ver=3.21.2")}}" id="elementor-frontend-js"></script>
-<script type="text/javascript" src="{{asset("home-assets/js/underscore.mind584.js?ver=1.13.4")}}" id="underscore-js"></script>
-<script type="text/javascript" id="wp-util-js-extra">
-    /* <![CDATA[ */
-    var _wpUtilSettings = {"ajax":{"url":"\/hub\/wp-admin\/admin-ajax.php"}};
-    /* ]]> */
-</script>
-
-<script type="text/javascript" src="{{asset("home-assets/js/wp-util.mine63c.js?ver=6.5.2")}}" id="wp-util-js"></script>
-<script type="text/javascript" id="wpforms-elementor-js-extra">
-    /* <![CDATA[ */
-    var wpformsElementorVars = {"captcha_provider":"recaptcha","recaptcha_type":"v2"};
-    /* ]]> */
-</script>
-<script type="text/javascript" src="{{asset("home-assets/plugins/wpforms/assets/js/integrations/elementor/frontend.min5068.js?ver=1.8.7.2")}}" id="wpforms-elementor-js"></script>
+        // Fetch cities when state changes
+        $('#state').on('change', function () {
+            const stateId = $(this).val();
+            if (stateId) {
+                $.ajax({
+                    url: `/state/${stateId}/cities`, // AJAX endpoint to fetch cities
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('Cities fetched:', data); // Debug fetched data
+                        const cityDropdown = $('#city');
+                        cityDropdown.empty().append('<option value="">Select City</option>');
+                        $.each(data, function (index, city) {
+                            cityDropdown.append(`<option value="${city.id}">${city.name}</option>`);
+                        });
+                    }
+                });
+            } else {
+                $('#city').empty().append('<option value="">Select City</option>');
+            }
+        });
+    });
 
 
 
+    function previewYouTubeVideo(url) {
+    const youtubePreview = document.getElementById('youtubePreview');
+    const iframe = youtubePreview.querySelector('iframe');
 
+    // Extract the video ID from the URL
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        const videoId = url.split('v=')[1] || url.split('/').pop();
+        iframe.src = `https://www.youtube.com/embed/${videoId}`;
+        youtubePreview.style.display = 'block';
+    } else {
+        youtubePreview.style.display = 'none';
+    }
+}
 
+function getYouTubeVideoId(url) {
+    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+}
 
+  </script>
 
-
-
-
-
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 <script src="{{ asset('asset/vendor/swiper/swiper-bundle.min.js')}}"></script>
-<script src="{{ asset('asset/vendor/choices.js/choices.min.js')}}"></script>
+<script src="{{ asset('asset/vendor/choices/choices.min.js')}}"></script>
 <script src="{{ asset('asset/vendor/flatpickr/flatpickr.min.js')}}"></script>
+<script src="{{ asset('asset/vendor/glightbox/glightbox.min.js')}}"></script>
+<script src="{{ asset('asset/vendor/cleave.js/cleave.min.js') }}"></script>
+
+{{-- <script src="{{ asset('asset/js/aos.js')}}"></script>
+<script src="{{ asset('asset/js/bootstrap.bundle.min.js')}}"></script>
+<script src="{{ asset('asset/js/bootstrap.dropzone.min.js')}}"></script>
+<script src="{{ asset('asset/js/fancybox.min.js')}}"></script>
+<script src="{{ asset('asset/js/form-validation.min.js')}}"></script>
+<script src="{{ asset('asset/js/jquery.ajaxchimp.min.js')}}"></script>
+<script src="{{ asset('asset/js/jquery.appear.js')}}"></script>
+<script src="{{ asset('asset/js/jquery.magnific-popup.min.js')}}"></script>
+<script src="{{ asset('asset/js/jquery.meanmenu.js')}}"></script>
+<script src="{{ asset('asset/js/jquery.min.js')}}"></script>
+<script src="{{ asset('asset/js/selectize.min.js')}}"></script> --}}
+
+
+
+
 
 <!-- Bootstrap + Theme scripts -->
 <script src="{{ asset('asset/js/theme.min.js')}}"></script>
+
 
 
 </body>

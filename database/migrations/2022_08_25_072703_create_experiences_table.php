@@ -19,6 +19,7 @@ class CreateExperiencesTable extends Migration
             $table->longText('title')->nullable();
             $table->longText('desc')->nullable();
             $table->longText('year')->nullable();
+            $table->boolean('currently_working')->default(false);
             $table->longText('purpose')->nullable();
             $table->timestamps();
         });

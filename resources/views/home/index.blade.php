@@ -1,42 +1,6 @@
 @extends('home.layouts.content')
 @section('content')
 <main class="content-wrapper">
-    <div id="apus-main-content">
-        <section id="main-container" class="container inner wrapper-main-page">
-            <div class="row">
-                <div id="main-content" class="main-page col-12">
-                    <div id="main" class="site-main clearfix" role="main">
-
-                        <div data-elementor-type="wp-page" data-elementor-id="29" class="elementor elementor-29">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
  <!-- Hero with search form and featured events slider -->
  <section class="position-relative overflow-hidden pt-5" style="margin-top: -76px">
     <div class="container position-relative pt-5 mt-sm-2">
@@ -56,11 +20,10 @@
                 &quot;searchEnabled&quot;: true
               }" aria-label="Location select" id="VPDNx_category">
 
-                <option value="">Select Option</option>
+                <option value="">Select Service</option>
                 @foreach ($category as $row)
                 <option value="{{ $row->id}}">{{ $row->title}}</option>
                 @endforeach
-
 
               </select>
             </div>
@@ -142,7 +105,7 @@
               <!-- Event -->
               <div class="swiper-slide">
                 <a class="ratio d-block bg-body-secondary rounded-4 overflow-hidden" href="single-entry-events.html" style="--fn-aspect-ratio: calc(463 / 856 * 100%)">
-                  <img src="asset/img/home/events/hero-slider/01.jpg" alt="Image">
+                  <img src="asset/img/home/events/hero-slider/1.jpg" alt="Image">
                 </a>
                 <div class="position-absolute shadow" style="bottom: 9%; left: 7%; width: 160px; height: 86px" data-bs-theme="light">
                   <div class="position-absolute vstack text-white z-2" style="top: 19px; left: 75px">
@@ -187,10 +150,10 @@
           </div>
         </div>
       </div>
-      <span class="position-absolute z-1 fw-bold" style="top: -15px; right: 100%; margin-right: -216px; font-size: 128px; color: var(--fn-tertiary-bg); text-shadow: 1px 1px 0 var(--fn-border-color), -1px 1px 0 var(--fn-border-color), -1px -1px 0 var(--fn-border-color), 1px -1px 0 var(--fn-border-color)">Hobbies</span>
-      <span class="position-absolute z-1 fw-bold" style="top: 82px; right: 100%; margin-right: -365px; font-size: 128px; color: var(--fn-tertiary-bg); text-shadow: 1px 1px 0 var(--fn-border-color), -1px 1px 0 var(--fn-border-color), -1px -1px 0 var(--fn-border-color), 1px -1px 0 var(--fn-border-color)">Concerts</span>
-      <span class="position-absolute z-1 fw-bold" style="top: 110px; left: 100%; margin-left: 90px; font-size: 128px; color: var(--fn-tertiary-bg); text-shadow: 1px 1px 0 var(--fn-border-color), -1px 1px 0 var(--fn-border-color), -1px -1px 0 var(--fn-border-color), 1px -1px 0 var(--fn-border-color)">Sports</span>
-      <span class="position-absolute z-1 fw-bold" style="top: 206px; left: 100%; margin-left: 10px; font-size: 128px; color: var(--fn-tertiary-bg); text-shadow: 1px 1px 0 var(--fn-border-color), -1px 1px 0 var(--fn-border-color), -1px -1px 0 var(--fn-border-color), 1px -1px 0 var(--fn-border-color)">Theaters</span>
+      <span class="position-absolute z-1 fw-bold" style="top: -15px; right: 100%; margin-right: -216px; font-size: 128px; color: var(--fn-tertiary-bg); text-shadow: 1px 1px 0 var(--fn-border-color), -1px 1px 0 var(--fn-border-color), -1px -1px 0 var(--fn-border-color), 1px -1px 0 var(--fn-border-color)">Executives</span>
+      <span class="position-absolute z-1 fw-bold" style="top: 82px; right: 100%; margin-right: -365px; font-size: 128px; color: var(--fn-tertiary-bg); text-shadow: 1px 1px 0 var(--fn-border-color), -1px 1px 0 var(--fn-border-color), -1px -1px 0 var(--fn-border-color), 1px -1px 0 var(--fn-border-color)">Assitant</span>
+      <span class="position-absolute z-1 fw-bold" style="top: 110px; left: 100%; margin-left: 90px; font-size: 128px; color: var(--fn-tertiary-bg); text-shadow: 1px 1px 0 var(--fn-border-color), -1px 1px 0 var(--fn-border-color), -1px -1px 0 var(--fn-border-color), 1px -1px 0 var(--fn-border-color)">Web</span>
+      <span class="position-absolute z-1 fw-bold" style="top: 206px; left: 100%; margin-left: 10px; font-size: 128px; color: var(--fn-tertiary-bg); text-shadow: 1px 1px 0 var(--fn-border-color), -1px 1px 0 var(--fn-border-color), -1px -1px 0 var(--fn-border-color), 1px -1px 0 var(--fn-border-color)">Email</span>
     </div>
     <span class="position-absolute top-0 start-0 w-100 bg-body-tertiary d-lg-none" style="height: calc(100% - 20px)"></span>
     <span class="position-absolute top-0 start-0 w-100 bg-body-tertiary d-none d-lg-block" style="height: calc(100% - 52px)"></span>
@@ -248,22 +211,22 @@
         $count = 0;
     @endphp
         @foreach ($index_cat as $row)
-        @if ($count < 4)
+        @if ($count < 6)
         <div class="swiper-slide">
           <article class="card w-100 hover-effect-scale bg-body-tertiary border-0">
             <div class="card-body text-center px-3">
-              <div class="ratio hover-effect-target" style="--fn-aspect-ratio: calc(80 / 164 * 100%)">
+              <div class="ratio hover-effect-target" style="--fn-aspect-ratio: calc(160 / 164 * 100%)">
                 @if (!empty($row->featured_img))
-                    <img src="{{ asset('category_icons/' . $row->id . '/' . $row->featured_img) }}" alt="Image" style="width: 70px" height="70px" class="img_fluid rounded">
+                    <img src="{{ asset('category_icons/' . $row->created_by . '/' . $row->featured_img) }}" alt="Image" style="width: 150px" height="150px" class="img_fluid rounded">
                 @else
                     <img src="{{ asset('asset/img/home/cars/body-type/sedan.svg')}}" alt="Image">
                 @endif
 
               </div>
               <h3 class="h6 pt-3 mb-1">
-                <a class="hover-effect-underline stretched-link" href="{{ url('service-category/' . $row->url) }}">{{ $row->title }}</a>
+                <a class=" stretched-link" href="{{ url('service-category/' . $row->url) }}">{{ $row->title }}</a>
               </h3>
-              <p class="fs-sm text-body-secondary mb-1 mb-sm-2">{{ $row->users_count }} offers</p>
+              {{-- <p class="fs-sm text-body-secondary mb-1 mb-sm-2">{{ $row->users_count }} offers</p> --}}
             </div>
           </article>
         </div>
@@ -295,7 +258,7 @@
               <div class="col-9 col-sm-7 col-md-5 pb-2 pb-sm-0 mt-2 mt-sm-0 mb-4 mb-sm-5 mb-md-0">
                 <div class="ratio ratio-16x9 border rounded-5 overflow-hidden">
                     <video muted="" loop="" playsinline="" autoplay="" poster="assets/img/about/v1/video-poster.jpg">
-                      <source src="asset/img/about/v1/video.mp4" type="video/mp4">
+                      <source src="asset/img/about/v1/videos.mp4" type="video/mp4">
                     </video>
                   </div>
               </div>
@@ -316,15 +279,15 @@
                     <div class="fs-sm fw-semibold text-dark-emphasis">4.9</div>
                   </div> --}}
                   <div class=" gy-3">
-                    <div class="col d-flex align-items-center gap-2 pb-3">
+                    <div class="col d-flex align-items-start gap-2 pb-3">
                       <i class="fi-check fs-xl me-1"></i>
                       Experienced professionals with expertise in diverse domainsAccessible ticket
                     </div>
-                    <div class="col d-flex align-items-center gap-2 pb-3">
+                    <div class="col d-flex align-items-left gap-2 pb-3">
                       <i class="fi-check fs-xl me-1 "></i>
                       Customized solutions tailored to your specific requirements
                     </div>
-                    <div class="col d-flex align-items-center gap-2 pb-3">
+                    <div class="col d-flex align-items-left gap-2 pb-3">
                       <i class="fi-check fs-xl me-1"></i>
                       Ability to communicate effectively
                     </div>
@@ -332,7 +295,7 @@
                       <i class="fi-check fs-xl me-1"></i>
                       Intrisic attention to detail
                     </div>
-                    
+
                   </div>
                 </div>
               </div>
@@ -342,15 +305,47 @@
 
 
 
+          {{-- <section class="row g-3 g-xl-4 pb-5 mb-md-3">
+            @foreach ($jobs as $job)
+                <div class="col-md-6 col-lg-6 col-xl-4">
+                    <div class="card bg-light border-0 h-100">
+                        <div class="card-body">
+                            <h3 class="fs-sm fw-bold mb-3 text-dark">{{ $job->title }}</h3>
+                            <div class="mb-3">
+                                <span class="badge bg-info-subtle text-info fs-xs fw-medium">
+                                    {{ $job->location ?? 'Location Not Specified' }}
+                                </span>
+                            </div>
+                            <p class="text-muted fs-sm mb-4">
+                                {{ \Illuminate\Support\Str::limit($job->description, 100, '...') }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-success fw-medium">Salary: </span>
+                                    <span class="fw-semibold text-dark">${{ number_format($job->salary, 2) }}</span>
+                                </div>
+                                <a href="{{ url('job/' . $job->url) }}" class="btn btn-outline-primary btn-sm">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </section> --}}
+
+
+
+
           <section class="bg-body-tertiary py-2 py-sm-3 py-md-4 py-lg-5">
             <div class="container py-5 my-xxl-3">
               <h2 class="text-nowrap pb-2 pb-lg-3">Highest Rated Freelancers</h2>
               {{-- <span class=" ">Get access to the best virtual assistance around the world</span> --}}
-    
+
               <!-- Filters + Sort selector -->
-            
-    
-    
+
+
+
               <!-- Row of event cards that turns into carousel on screens < 992px wide (lg breakpoint) -->
               <div class="mx-n2">
                 <div class="swiper px-2 pb-4" data-swiper="{
@@ -365,53 +360,82 @@
                       &quot;slidesPerView&quot;: 2
                     },
                     &quot;992&quot;: {
-                      &quot;slidesPerView&quot;: 3
+                      &quot;slidesPerView&quot;: 4
                     }
                   }
                 }">
 
-               
+
                   <div class="swiper-wrapper">
-    
+
                     <!-- Event listing card -->
-                    @foreach (\App\Models\User::query()->where('is_admin', 0)->whereNotNull('identity')->limit(8)->get() as $row)
+                    @foreach (\App\Models\User::query()->where('is_admin', 0)->whereNotNull('identity') ->where('is_influencer', 0)->limit(30)->get() as $row)
                     @php
                         $imagePath = $row->profile_image;
                     @endphp
+
                     @if ($row->identity)
                     <div class="swiper-slide h-auto">
-                      <article class="card h-100 hover-effect-scale hover-effect-opacity border-0 shadow">
+                      <article class="card h-100 hover-effect-scale hover-effect-opacity border-0 shadow placeholder-wave">
                         <div class="position-absolute top-0 end-0 z-2 hover-effect-target opacity-0 pt-1 pt-sm-0 pe-1 pe-sm-0 mt-2 mt-sm-3 me-2 me-sm-3">
                           <button type="button" class="btn btn-sm btn-icon btn-light bg-light border-0 rounded-circle animate-pulse" aria-label="Add to wishlist">
                             <i class="fi-heart animate-target fs-sm"></i>
                           </button>
                         </div>
-                        <div class="bg-body-secondary rounded overflow-hidden">
-                          <div class="ratio hover-effect-target" style="--fn-aspect-ratio: calc(250 / 416 * 100%)">
-                            <img src="{{ !empty($row->profile_image) && file_exists(public_path($imagePath)) ? asset($imagePath) : asset('freelancer.png') }}" alt="Image">
+                        <div class="bg-body-light rounded overflow-hidden">
+                          <div class="ratio hover-effect-target" style="--fn-aspect-ratio: calc(290 / 416 * 100%)">
+                            <img src="{{ !empty($row->profile_image) && file_exists(public_path($imagePath)) ? asset($imagePath) : asset('avata2r.png') }}" alt="Image" class="" style="object-fit: cover;">
                           </div>
                         </div>
                         <div class="card-body">
-                          <ul class="list-unstyled flex-row flex-wrap align-items-center gap-2 fs-sm ">
-                            <li class="d-flex align-items-center">
-                                <i class="fi-star-filled fs-xl text-warning me-2 mb-2"> </i>
-                                <span class=""> {{ \App\Helpers\CommonHelpers::freelancerRating( $row->id) }}.0  </span>
-                                 <span class=""> ( {{ \App\Models\ServiceRating::query()->where('service_id', $row->id)->count() }} Reviews )</span>
+                          <ul class="list-unstyled flex-row flex-wrap align-items-center gap-2 fs-sm  placeholder-wave placeholder-glow">
+                            <li class="d-flex align-items-center fs-sm ">
+                                <i class="fi-star-filled fs-xs text-warning me-2 mb-2"> </i>
+                                <span class="fs-xs"> {{ \App\Helpers\CommonHelpers::freelancerRating( $row->id) }}.0  </span>
+                                 <span class="fs-xs"> ( {{ \App\Models\ServiceRating::query()->where('service_id', $row->id)->count() }} Reviews )</span>
                             </li>
-                           
-                            
-                            <li >{{ $row->business_category ?? 'Data Managment' }}</li>
+
+
+                            <li class=" ms-auto">
+                                <div class=" align-items-center fs-xs placeholder-glow">
+                                <i class="fi-map-pin me-1"></i>
+                                {{ $row->state->name }}
+                              </div>
+                            </li>
                           </ul>
-                          <h3 class="h5 pt-1 mb-2">
-                            <a class="hover-effect-underline stretched-link" href="{{ url('user/' . $row->identity) }}">{{ ucwords($row->full_name) }}</a>
+                          <h3 class="h5 pt-1 mb-2 placeholder-glow">
+                            <a class="hover-effect-underline stretched-link" href="{{ url('user/' . $row->identity) }}">{{ ucwords($row->full_name) }}   @if ($row->is_feature)
+                                <i class="fi-check-shield text-success "></i>
+                                @endif </a>
                           </h3>
-                          <div class="d-flex align-items-center fs-sm">
-                            <i class="fi-map-pin me-1"></i>
-                            {{ $row->state }}
+                          <div class="d-flex align-items-center gap-3 border-bottom pb-2 mb-4">
+                          <div class=" pb-3 ">
+                          <div class="d-flex gap-2">
+                            @php
+                            // Get the first 3 skills
+                            $visibleSkills = $row->mySkills->take(2);
+                            // Count remaining skills
+                            $remainingSkills = $row->mySkills->count() - 3;
+                        @endphp
+
+                        @foreach ($visibleSkills as $skill)
+                            <span class="fs-xs badge text-bg-success">
+                                {{ $skill->title }}
+                            </span>
+                        @endforeach
+
+                        <!-- Show "See X more" button if there are remaining skills -->
+                        @if ($remainingSkills > 0)
+                            <a type="button" class="btn btn-link p-0 fs-xs text-primary" data-bs-toggle="modal" data-bs-target="#skillsModal-{{ $row->id }}">
+                                See {{ $remainingSkills }} more
+                            </a>
+                        @endif
+                          </div>
+                          </div>
                           </div>
                         </div>
-                        <div class="card-footer d-flex align-items-center justify-content-between gap-3 bg-transparent border-0 pt-0 pb-4">
-                          <div class="h5 text-info mb-0">{{ $currencySymbols[$currency] }} 
+                        <div class="card-footer d-flex align-items-center justify-content-between gap-3 bg-transparent border-0 pt-0 pb-4 placeholder-glow">
+                          <div class="h6 text-success mb-0">{{ $currencySymbols[$currency] }}
                             @if ($currencySymbols[$currency] == '$')
                             {{ $row->usd_rate }}/hr
                             @elseif($currencySymbols[$currency] == '₦')
@@ -421,20 +445,40 @@
                             @elseif($currencySymbols[$currency] == '€')
                             {{ $row->eur_rate }}/hr
                         @endif</div>
-                          <a href="{{ url('user/' . $row->identity) }}" type="button" class="btn btn-outline-dark position-relative z-2 ">View Profile <i class="fi-arrow-right pe-2"></i></a>
+                          <a href="{{ url('user/' . $row->identity) }}"class="btn btn-outline-dark position-relative z-2 placeholder-glow">View Profile <i class="fi-arrow-right pe-2"></i></a>
                         </div>
                       </article>
                     </div>
                     @endif
                     @endforeach
-                 
+
                   </div>
-    
+
+                  <div class="modal fade" id="skillsModal-{{ $row->id }}" tabindex="-1" aria-labelledby="skillsModalLabel-{{ $row->id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="skillsModalLabel-{{ $row->id }}">All Skills</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach ($row->mySkills as $skill)
+                                        <span class="fs-xs badge text-bg-success">
+                                            {{ $skill->title }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                   <!-- Pagination (Bullets) -->
                   <div class="swiper-pagination position-static mt-3 mt-md-4"></div>
                 </div>
               </div>
-    
+
               <!-- View all button -->
               <div class="text-center pt-md-2 pt-lg-3">
                 <a class="btn btn-lg btn-primary" href="/freelancers">Load More Freelancer</a>
@@ -443,8 +487,145 @@
           </section>
 
 
-                          
-                          
+
+
+
+          <section class="bg-body-tertiary py-2 py-sm-3 py-md-4 py-lg-5">
+            <div class="container py-5 my-xxl-3">
+              <h2 class="text-nowrap pb-2 pb-lg-3">Top Influencers</h2>
+              {{-- <span class=" ">Get access to the best virtual assistance around the world</span> --}}
+
+              <!-- Filters + Sort selector -->
+
+
+
+              <!-- Row of event cards that turns into carousel on screens < 992px wide (lg breakpoint) -->
+              <div class="mx-n2">
+                <div class="swiper px-2 pb-4" data-swiper="{
+                  &quot;slidesPerView&quot;: 1,
+                  &quot;spaceBetween&quot;: 24,
+                  &quot;pagination&quot;: {
+                    &quot;el&quot;: &quot;.swiper-pagination&quot;,
+                    &quot;clickable&quot;: true
+                  },
+                  &quot;breakpoints&quot;: {
+                    &quot;500&quot;: {
+                      &quot;slidesPerView&quot;: 2
+                    },
+                    &quot;992&quot;: {
+                      &quot;slidesPerView&quot;: 4
+                    }
+                  }
+                }">
+
+
+                  <div class="swiper-wrapper">
+
+                    <!-- Event listing card -->
+
+                    @foreach ($influencer  as $row)
+                    @php
+                    $imagePath = $row->profile_image;
+                    @endphp
+                    <div class="swiper-slide h-auto">
+                      <article class="card h-100 hover-effect-scale hover-effect-opacity border-0 shadow placeholder-wave">
+                        <div class="position-absolute  top-0 start-0 z-2 hover-effect-target  pt-1 pt-sm-0 pe-1 pe-sm-0 mt-2 mt-sm-3 me-2 me-sm-3">
+                          {{-- <button type="button" class="btn btn-sm btn-icon btn-light bg-light border-0 ms-auto rounded-circle animate-pulse" aria-label="Add to wishlist">
+                            <i class="fi-heart animate-target fs-sm"></i>
+
+                          </button> --}}
+                          @if ($row->is_influencer)
+                          <span class="badge fs-xm m-2  text-bg-success">Top Influencer</span>
+                          @endif
+                        </div>
+                        <div class="bg-body-light rounded overflow-hidden">
+                          <div class="ratio hover-effect-target" style="--fn-aspect-ratio: calc(290 / 416 * 100%)">
+                            <img src="{{ !empty($row->profile_image) && file_exists(public_path($imagePath)) ? asset($imagePath) : asset('avatar.png') }}" alt="Image" class="" style="object-fit: cover;">
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <ul class="list-unstyled flex-row flex-wrap align-items-center gap-2 fs-sm placeholder-wave placeholder-glow">
+                            <li class="d-flex align-items-center">
+                              <i class="fi-star-filled fs-xm text-warning me-2 mb-2"> </i>
+                              <span class="fs-xs">{{ \App\Helpers\CommonHelpers::freelancerRating($row->id) }}.0</span>
+                              <span class="fs-xs">({{ \App\Models\ServiceRating::query()->where('service_id', $row->id)->count() }} Reviews)</span>
+                            </li>
+                            <li class=" fs-xs ms-auto">
+                                <div class=" align-items-center fs-xs placeholder-glow">
+                                <i class="fs-xs fi-map-pin me-1"></i>
+                                {{ $row->state->name }}
+                              </div>
+                            </li> <!-- Display category name -->
+                          </ul>
+                          <h3 class="h5 pt-1 mb-2 placeholder-glow">
+                            <a class="hover-effect-underline stretched-link" href="{{ url('user/' . $row->identity) }}">{{ ucwords($row->full_name) }} @if ($row->is_feature)
+                                <i class="fi-check-shield text-success"></i>
+                                @endif</a>
+
+                          </h3>
+                          <div class="d-flex align-items-center gap-3 border-bottom pb-2 mb-4">
+                            <div class="w-100 pb-3 overflow-x-hidden">
+                            <div class="d-flex gap-2">
+                              @php
+                              // Get the first 3 skills
+                              $visibleSkills = $row->mySkills->take(2);
+                              // Count remaining skills
+                              $remainingSkills = $row->mySkills->count() - 3;
+                          @endphp
+
+                          @foreach ($visibleSkills as $skill)
+                              <span class="fs-xs badge text-bg-success">
+                                  {{ $skill->title }}
+                              </span>
+                          @endforeach
+
+                          <!-- Show "See X more" button if there are remaining skills -->
+                          @if ($remainingSkills > 0)
+                              <a type="button" class="btn btn-link p-0 fs-xs text-primary" data-bs-toggle="modal" data-bs-target="#skillsModal-{{ $row->id }}">
+                                  See {{ $remainingSkills }} more
+                              </a>
+                          @endif
+                            </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex align-items-center justify-content-between gap-3 bg-transparent border-0 pt-0 pb-4 placeholder-glow">
+                          <div class="h6 text-success mb-0">
+                            {{ $currencySymbols[$currency] }}
+                            @if ($currencySymbols[$currency] == '$')
+                              {{ $row->usd_rate }}/hr
+                            @elseif ($currencySymbols[$currency] == '₦')
+                              {{ $row->ngn_rate }}/hr
+                            @elseif ($currencySymbols[$currency] == '£')
+                              {{ $row->gbp_rate }}/hr
+                            @elseif ($currencySymbols[$currency] == '€')
+                              {{ $row->eur_rate }}/hr
+                            @endif
+                          </div>
+                          <a href="{{ url('user/' . $row->identity) }}" class="btn btn-outline-dark position-relative z-2 placeholder-glow">View Profile <i class="fi-arrow-right pe-2"></i></a>
+                        </div>
+                      </article>
+                    </div>
+                    @endforeach
+
+                  </div>
+
+                  <!-- Pagination (Bullets) -->
+                  <div class="swiper-pagination position-static mt-3 mt-md-4"></div>
+                </div>
+              </div>
+
+              <!-- View all button -->
+              <div class="text-center pt-md-2 pt-lg-3">
+                <a class="btn btn-lg btn-primary" href="/freelancers">Load More Freelancer</a>
+              </div>
+            </div>
+          </section>
+
+
+
+
+
 
 
 
@@ -470,7 +651,7 @@
                           </div>
                         </div>
                         <div class="ratio ratio-1x1 flex-shrink-0 bg-white bg-opacity-10 rounded overflow-hidden align-self-center" style="width: 106px">
-                          <img src="asset/img/home/doctors/offers/01.jpg" alt="Image">
+                          <img src="asset/img/home/doctors/offers/01.png" alt="Image">
                         </div>
                     </div>
                   </div>
@@ -486,11 +667,11 @@
                         </h3>
                         <p class="fs-sm text-white opacity-75">Virtual assistants can handle time-consuming tasks such as administrative work, email management, and scheduling, freeing up your time to focus on core business activities.</p>
                         <div class="d-flex align-items-center mt-auto">
-                          
+
                         </div>
                       </div>
                       <div class="ratio ratio-1x1 flex-shrink-0 bg-white bg-opacity-10 rounded overflow-hidden align-self-center" style="width: 106px">
-                        <img src="asset/img/home/doctors/offers/02.jpg" alt="Image">
+                        <img src="asset/img/home/doctors/offers/02.png" alt="Image">
                       </div>
                     </div>
                   </div>
@@ -533,11 +714,11 @@
       </section>
 
 
-                       
+
 
  <!-- What's new section -->
- <section class="container position-relative pt-2 pt-sm-3 pt-md-4 pt-lg-5 pb-5 my-xxl-3">
-    <h2 class="pb-2 pb-sm-3">What's new in Barcelona</h2>
+ <section class="container position-relative pt-5 pt-sm-5 pt-md-5 pt-lg-5 pb-5 my-xxl-3">
+    <h2 class="pb-2 pb-sm-3">Our Success Story </h2>
     <div class="row align-items-start align-items-xl-center">
 
       <!-- Controlled image slider -->
@@ -620,7 +801,7 @@
                 growing my company. I highly recommend their
                 services to anyone seeking reliable virtual
                 assistance. ”</p>
-             
+
             </div>
 
             <!-- Item -->
@@ -649,7 +830,7 @@
                 of my needs, has not only elevated my
                 productivity but also empowered me to exceed
                 client expectations. ”</p>
-           
+
             </div>
 
             <!-- Item -->
@@ -675,7 +856,7 @@
                 efficiency and effectiveness in my freelance
                 endeavors, making every project a remarkable
                 success ”</p>
-            
+
             </div>
           </div>
         </div>
@@ -691,14 +872,14 @@
 
 
 
-                           
-                         
+
+
 
 
                             <section class="container py-2 py-sm-3 py-md-4 py-lg-5 mb-xxl-3">
                                 <h2 class="pt-5">How it works</h2>
                                 <p class="fs-lg pb-3">Effortlessly find, connect, and hire the perfect contractor for your job - all in just three easy steps.</p>
-                        
+
                                 <!-- Row of items that turns into carousel on screens < 800px wide -->
                                 <div class="swiper pb-5" data-swiper="{
                                   &quot;slidesPerView&quot;: 1,
@@ -717,21 +898,21 @@
                                   }
                                 }">
                                   <div class="swiper-wrapper">
-                        
+
                                     <!-- Item -->
                                     <div class="swiper-slide">
                                       <svg class="text-secondary-emphasis" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor"><path d="M41.441 35.281a.95.95 0 0 1-.184-.018.99.99 0 0 1-.175-.054.93.93 0 0 1-.162-.086.91.91 0 0 1-.142-.116c-.043-.043-.082-.091-.117-.142s-.063-.105-.085-.162-.042-.116-.053-.175a.95.95 0 0 1-.019-.184.93.93 0 0 1 .019-.183.88.88 0 0 1 .053-.175c.023-.057.052-.112.085-.162a.93.93 0 0 1 .117-.142c.174-.174.416-.275.663-.275a.94.94 0 0 1 .663.275c.043.043.082.091.116.142a.97.97 0 0 1 .087.162c.024.057.041.115.053.175a.93.93 0 0 1 .019.183.95.95 0 0 1-.019.184c-.012.059-.03.118-.053.175a.94.94 0 0 1-.087.162c-.034.052-.073.099-.116.142s-.091.082-.143.116a.86.86 0 0 1-.162.086.95.95 0 0 1-.175.054.93.93 0 0 1-.183.018zM27.48 37.367c-9.238 0-16.753-7.515-16.753-16.752S18.242 3.862 27.48 3.862s16.754 7.515 16.754 16.752-7.516 16.753-16.754 16.753zm0-31.63c-8.204 0-14.878 6.674-14.878 14.877A14.9 14.9 0 0 0 27.48 35.492a14.9 14.9 0 0 0 14.879-14.878A14.9 14.9 0 0 0 27.48 5.737zm-3.993 17.638a.94.94 0 0 1-.925-.79.94.94 0 0 1 .617-1.033c.162-.489.689-.756 1.18-.596l1.025.334a.94.94 0 0 1 .644.965c-.034.432-.359.784-.787.852l-1.605.256a.94.94 0 0 1-.149.012zm8.37 0a.94.94 0 0 1-.149-.012l-1.605-.256a.94.94 0 0 1-.143-1.817l1.025-.334a.94.94 0 0 1 1.18.596.94.94 0 0 1 .617 1.033.94.94 0 0 1-.925.79zM41.989 6.104A20.38 20.38 0 0 0 27.478.094a20.39 20.39 0 0 0-14.511 6.01 20.38 20.38 0 0 0-6.011 14.51 20.37 20.37 0 0 0 5.363 13.833l-1.308 1.308-1.546-1.546a.94.94 0 0 0-1.326 0l-6.95 6.95C.423 41.925 0 42.945 0 44.03s.423 2.105 1.189 2.871a4.05 4.05 0 0 0 2.872 1.188 4.05 4.05 0 0 0 2.872-1.188l6.95-6.949c.176-.176.275-.414.275-.663s-.099-.487-.275-.663l-1.546-1.546 1.308-1.308c3.018 2.76 6.728 4.53 10.788 5.136 1.029.154 2.057.23 3.08.23a20.38 20.38 0 0 0 9.325-2.256.94.94 0 0 0 .407-1.262.94.94 0 0 0-1.262-.407c-7.226 3.703-15.941 2.332-21.688-3.414a18.52 18.52 0 0 1-5.463-13.186A18.52 18.52 0 0 1 14.293 7.43c7.271-7.27 19.101-7.27 26.371 0 5.964 5.963 7.184 15.221 2.966 22.512a.94.94 0 0 0 .342 1.281.94.94 0 0 0 1.281-.342c4.643-8.025 3.3-18.214-3.263-24.777zM11.895 39.289l-6.287 6.287a2.19 2.19 0 0 1-3.092 0 2.17 2.17 0 0 1 0-3.092l6.287-6.287.883.883-2.639 2.639a.94.94 0 0 0 0 1.326c.183.183.423.275.663.275s.48-.092.663-.275l2.639-2.639.883.883zm23.459-13.825v-2.415c.184-.75 1.136-4.809 1.137-8.386 0-1.47-.33-2.859-.607-3.765l-.418-1.188c-.201-.5-.284-.707-.579-.879a.94.94 0 0 0-1.058.078l-.241.193a6.23 6.23 0 0 1-5.206 1.234c-2.622-.557-5.338.498-6.898 2.64-.835.124-1.604.543-2.164 1.192a3.55 3.55 0 0 0-.824 2.839 1.01 1.01 0 0 0 .024.114l1.46 5.258v3.086c0 1.853.942 3.422 2.725 4.535.703.439 1.511.796 2.408 1.063l-.022 1.583a.94.94 0 0 0 .938.95h3.273a.94.94 0 0 0 .938-.95l-.022-1.581c.9-.266 1.709-.622 2.413-1.061 1.779-1.111 2.72-2.68 2.72-4.539zm-6.222 3.95l-.103.025a.94.94 0 0 0-.693.918l.018 1.363h-1.372l.019-1.363a.94.94 0 0 0-.693-.918l-.097-.024c-1.309-.314-4.352-1.325-4.352-3.952v-6.082c0-.19.155-.345.345-.345h3.445a8.71 8.71 0 0 0 6.002-2.385.94.94 0 0 0 .038-1.325.94.94 0 0 0-1.325-.038c-1.28 1.208-2.955 1.873-4.715 1.873h-3.444c-.601 0-1.148.241-1.548.63l-.309-1.111a1.67 1.67 0 0 1 .395-1.288c.319-.369.781-.58 1.268-.58a.94.94 0 0 0 .799-.447l.015-.024c1.09-1.724 3.168-2.596 5.169-2.171a8.09 8.09 0 0 0 5.992-1.054c.291.869.63 2.176.63 3.547l-.103 2.099a.95.95 0 0 0-.148-.01.94.94 0 0 0-.93.945l.043 5.239v2.528c0 2.636-3.04 3.641-4.347 3.95zm-1.461-1.163a2.41 2.41 0 0 1-2.201-1.433.94.94 0 0 1 .479-1.237.94.94 0 0 1 1.236.478.53.53 0 0 0 .971 0c.209-.474.763-.688 1.236-.478a.94.94 0 0 1 .479 1.237 2.41 2.41 0 0 1-2.201 1.433z"></path></svg>
                                       <h3 class="h5 pt-3 pt-md-4 mb-2">Post a job</h3>
                                       <p class="mb-0">It’s free and easy to post a job. Simply fill in a title, description.</p>
                                     </div>
-                        
+
                                     <!-- Item -->
                                     <div class="swiper-slide">
                                       <svg class="text-secondary-emphasis" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor"><path d="M43.313 0H18.938c-2.585 0-4.687 2.103-4.687 4.688v8.438H4.688C2.103 13.125 0 15.228 0 17.813v19.875c0 2.585 2.103 4.688 4.688 4.688h1.875v4.688a.94.94 0 0 0 .938.937.94.94 0 0 0 .663-.275l5.35-5.35h15.549c2.585 0 4.688-2.103 4.688-4.687V29.25h1.875v4.688a.94.94 0 0 0 .938.937.94.94 0 0 0 .663-.275l5.35-5.35h1.487c2.392 0 3.938-1.84 3.938-4.687V4.688A4.7 4.7 0 0 0 43.313 0zM31.875 37.688c0 1.551-1.262 2.813-2.812 2.813H13.125a.94.94 0 0 0-.663.275l-4.025 4.025v-3.362A.94.94 0 0 0 7.5 40.5H4.688c-1.551 0-2.812-1.262-2.812-2.812V17.813C1.875 16.262 3.137 15 4.688 15h24.375c1.551 0 2.813 1.262 2.813 2.813v19.875zm14.25-13.125c0 1.05-.268 2.813-2.062 2.813h-1.875a.94.94 0 0 0-.663.275L37.5 31.674v-3.362a.94.94 0 0 0-.937-.937H33.75v-6.75h5.813a.94.94 0 0 0 .938-.937.94.94 0 0 0-.937-.937H33.75v-.937c0-2.585-2.103-4.687-4.687-4.687H16.125V4.688c0-1.551 1.262-2.812 2.813-2.812h24.375c1.551 0 2.813 1.262 2.813 2.813v19.875zM39.563 7.5H22.688a.94.94 0 0 0-.937.938.94.94 0 0 0 .938.938h16.875a.94.94 0 0 0 .938-.937.94.94 0 0 0-.937-.937zm0 5.625h-3.75a.94.94 0 0 0-.937.938.94.94 0 0 0 .938.938h3.75a.94.94 0 0 0 .938-.937.94.94 0 0 0-.937-.937zM8.438 22.5a.94.94 0 0 0 .938-.937.94.94 0 0 0-.937-.937.94.94 0 0 0-.937.938.94.94 0 0 0 .938.938zm16.875-1.875H12.188a.94.94 0 0 0-.937.938.94.94 0 0 0 .938.938h13.125a.94.94 0 0 0 .938-.937.94.94 0 0 0-.937-.937zm0 5.625h-9.375a.94.94 0 0 0-.937.938.94.94 0 0 0 .938.938h9.375a.94.94 0 0 0 .938-.937.94.94 0 0 0-.937-.937zM8.438 28.125h3.75a.94.94 0 0 0 .938-.937.94.94 0 0 0-.937-.937h-3.75a.94.94 0 0 0-.937.938.94.94 0 0 0 .938.938zm9.375 3.75H8.625a.94.94 0 0 0-.937.938.94.94 0 0 0 .938.938h9.188a.94.94 0 0 0 .938-.937.94.94 0 0 0-.937-.937z"></path></svg>
                                       <h3 class="h5 pt-3 pt-md-4 mb-2">Choose freelancers</h3>
                                       <p class="mb-0">It’s free and easy to post a job. Simply fill in a title, description.</p>
                                     </div>
-                        
+
                                     <!-- Item -->
                                     <div class="swiper-slide">
                                       <svg class="text-secondary-emphasis" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor"><path d="M4.519 8.136c.196.471.752.703 1.224.507s.703-.752.507-1.224-.752-.703-1.224-.507-.704.753-.507 1.224zm3.875 0c.153.368.535.607.935.576.391-.03.729-.307.834-.685.222-.798-.673-1.478-1.384-1.054-.393.234-.56.74-.384 1.163zM4.752 44.84h35.053A8.21 8.21 0 0 0 48 36.645a8.21 8.21 0 0 0-7.257-8.141l-.001-20.593A4.76 4.76 0 0 0 35.99 3.16H4.752A4.76 4.76 0 0 0 0 7.912v32.175a4.76 4.76 0 0 0 4.752 4.753zm0-1.875a2.88 2.88 0 0 1-2.877-2.878V12.202h36.993v16.302a8.28 8.28 0 0 0-6.536 4.779H5.76a.94.94 0 0 0-.937.938v4.766a.94.94 0 0 0 .938.938h9.613a.94.94 0 0 0 .938-.937.94.94 0 0 0-.937-.937H6.698V35.16h25.048a8.24 8.24 0 0 0-.135 1.487c0 .47.04.941.12 1.405h-8.109a.94.94 0 0 0-.937.938.94.94 0 0 0 .938.938h8.675a8.28 8.28 0 0 0 2.298 3.04H4.752zm41.373-6.32a6.33 6.33 0 0 1-6.32 6.32 6.39 6.39 0 0 1-6.32-6.32 6.31 6.31 0 0 1 .132-1.285c.595-2.871 3.144-5.035 6.188-5.035a6.33 6.33 0 0 1 6.32 6.319zM4.752 5.035H35.99a2.88 2.88 0 0 1 2.877 2.877v2.415H1.875V7.912a2.88 2.88 0 0 1 2.877-2.877zm2.879 23.769a8.43 8.43 0 0 0 5.579 2.124 8.43 8.43 0 0 0 5.58-2.125 8.4 8.4 0 0 0-5.579-14.654 8.4 8.4 0 0 0-5.579 14.655zm5.293.242a6.54 6.54 0 0 1-3.678-1.339 4.04 4.04 0 0 1 3.954-3.3c1.973.004 3.628 1.419 3.972 3.3-1.208.927-2.728 1.407-4.249 1.34zm-1.021-7.821a1.31 1.31 0 0 1 1.307-1.307 1.31 1.31 0 0 1 1.307 1.307 1.31 1.31 0 0 1-1.301 1.307 1.31 1.31 0 0 1-1.312-1.307zm1.307-5.201c3.593 0 6.515 2.922 6.515 6.514 0 1.287-.383 2.534-1.08 3.589-.563-1.321-1.596-2.39-2.879-3.01.393-.529.626-1.184.626-1.893 0-1.755-1.428-3.182-3.182-3.182s-3.182 1.427-3.182 3.182c0 .708.233 1.363.626 1.892-1.283.62-2.315 1.69-2.878 3.011a6.52 6.52 0 0 1-1.08-3.589c0-3.592 2.922-6.514 6.514-6.514zm25.504 21.598l-1.285-1.285a.94.94 0 0 0-1.326 0 .94.94 0 0 0 0 1.326l1.948 1.948a.94.94 0 0 0 1.326 0l4.368-4.367a.94.94 0 0 0 0-1.326.94.94 0 0 0-1.326 0l-3.704 3.705z"></path></svg>
@@ -739,7 +920,7 @@
                                       <p class="mb-0">It’s free and easy to post a job. Simply fill in a title, description.</p>
                                     </div>
                                   </div>
-                        
+
                                   <!-- Pagination (Bullets) -->
                                   <div class="swiper-pagination position-static mt-3"></div>
                                 </div>
@@ -755,7 +936,7 @@
                                       <h2 class="text-white text-center text-md-start pb-2 pb-sm-3">Need
                                         something done?</h2>
                                       <div class="d-flex flex-column flex-sm-row flex-md-column flex-lg-row justify-content-center justify-content-md-start gap-3">
-                                        <a class="btn btn-lg btn-primary animate-scale" href="add-contractor-location.html">
+                                        <a class="btn btn-lg btn-primary animate-scale" href="{{ route('index.staffing.employer') }}">
                                           <i class="fi-plus fs-lg animate-target ms-n2 me-2"></i>
                                           Add business
                                         </a>
@@ -1028,7 +1209,7 @@
                                 </div>
                             </section> --}}
 
-                         
+
 
                         </div>
                     </div><!-- .site-main -->

@@ -1,4 +1,4 @@
-@extends('shared.layouts.users')
+@extends('shared.layout.employer')
 @section('content')
     <!-- Breadcrumb Area -->
     <div class="breadcrumb-area">

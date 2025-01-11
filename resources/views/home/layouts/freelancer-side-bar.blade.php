@@ -14,7 +14,7 @@
                                     data-id="0ec44e6" data-element_type="widget"
                                     data-widget_type="apus_element_freelancer_search_form.default">
                                     <!-- Desktop Version -->
-<div class="elementor-widget-container card shadow border-0 p-3 d-none d-lg-block">
+<div class="elementor-widget-container card shadow border-0 p-3 d-none d-lg-block"> 
     <div class="widget-listing-search-form w-100">
         <form action="{{ route('changeCurrency') }}" method="POST" class="d-flex align-items-center justify-content-between">
             @csrf

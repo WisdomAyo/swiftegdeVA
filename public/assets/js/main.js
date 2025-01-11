@@ -32,7 +32,7 @@ jQuery(function ($) {
 	$(function () {
 		$('#sidemenu-nav').metisMenu();
 	});
-
+ 
 	// Burger Menu JS
 	$('.burger-menu').on('click', function() {
 		$(this).toggleClass('active');

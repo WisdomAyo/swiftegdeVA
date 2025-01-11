@@ -9,8 +9,8 @@ use Stevebauman\Location\Facades\Location;
 class CurrencyController extends Controller
 {
     protected $countryCurrencyMap = [
-        'US' => 'USD',
         'NG' => 'NGN',
+        'US' => 'USD',
         'GB' => 'GBP',
         'EU' => 'EUR',
         // Add more countries and their currencies as needed
@@ -20,7 +20,7 @@ class CurrencyController extends Controller
     {
         $location = Location::get(request()->ip());
         $countryCode = $location->countryCode;
-        $currency = $this->countryCurrencyMap[$countryCode] ?? 'USD'; // Default to USD if country not found
+        $currency = $this->countryCurrencyMap[$countryCode] ?? 'NGN'; // Default to USD if country not found
 
         return $currency;
     }
@@ -34,7 +34,7 @@ class CurrencyController extends Controller
     public function changeCurrency(Request $request)
     {
         $request->validate([
-            'currency' => 'required|in:USD,NGN,GBP,EUR', // Add more currencies as needed
+            'currency' => 'required|in:NGN,USD,GBP,EUR', // Add more currencies as needed
         ]);
 
         session(['currency' => $request->currency]);

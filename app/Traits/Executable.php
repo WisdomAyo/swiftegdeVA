@@ -38,7 +38,7 @@ trait Executable
         $identity = CommonHelpers::generateCramp("user");
         $verifycode = CommonHelpers::code_ref(6);
 
-        $state = States::where('id',$request->state)->value('name');
+        $state = States::where('id',$request->state_id)->value('name');
         $post = new User();
         $post->role = "Employer";
         $post->full_name = $request->fullname;
@@ -46,14 +46,20 @@ trait Executable
         $post->password = bcrypt($request->password);
         $post->phone = $request->phone;
         $post->business_name = $request->office_title;
-        $post->state = $state;
+        $post->state_id = $state;
+        $post->country_id = $request->country_id;
         $post->category_id = $request->country_ep;
-        $post->city =  $request->state_area_ep;
+        $post->city_id =  $request->city_id;
+        $post->street_address = $request->street_address;
         $post->is_admin = 2;
         $post->identity  = $identity;
         $post->status = 0;
         $post->verify_code   = $verifycode;
         $post->save();
+
+
+
+
 
         $details    =   [
             'name'=> $request->fullname,
@@ -64,7 +70,7 @@ trait Executable
         Mail::to($request->email)->send(new WelcomeToSwiftedgeVA($details));
 
         if($post->id) {
-            return redirect()->route('login')->with('response', 'Your registration was successful, please verify your account login');
+            return redirect()->route('login')->with('response', 'Your registration was successful, please check your email and verify your account login');
         }else {
             return back()->withInput()->with('response', 'an error occurred');
         }

@@ -9,6 +9,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Throwable;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Symfony\Component\HttpFoundation\Exception\PostTooLargeException;
 
 class Handler extends ExceptionHandler
 {
@@ -74,5 +75,14 @@ class Handler extends ExceptionHandler
 
     }
 
+    public function render($request, Throwable $exception)
+{
+    if ($exception instanceof PostTooLargeException) {
+        Log::info('PostTooLargeException caught in Handler.');
+        return redirect()->back()->with('validationErrors', 'The uploaded file is too large. Maximum file size allowed is 10MB.');
+    }
+
+    return parent::render($request, $exception);
+}
 
 }

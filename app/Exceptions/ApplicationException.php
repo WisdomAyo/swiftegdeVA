@@ -44,4 +44,6 @@ class ApplicationException extends RuntimeException
     {
         return $this->errors;
     }
+
+    
 }

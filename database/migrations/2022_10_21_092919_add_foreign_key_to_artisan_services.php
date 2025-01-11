@@ -26,10 +26,10 @@ class AddForeignKeyToArtisanServices extends Migration
      */
     public function down()
     {
-        Schema::table('artisan_services', function (Blueprint $table) {
-            $table->dropForeign('lists_user_id_foreign');
-            $table->dropIndex('lists_user_id_index');
-            $table->dropColumn("user_id");
-        });
+        // Schema::table('artisan_services', function (Blueprint $table) {
+        //     $table->dropForeign('lists_user_id_foreign');
+        //     $table->dropIndex('lists_user_id_index');
+        //     $table->dropColumn("user_id");
+        // });
     }
 }

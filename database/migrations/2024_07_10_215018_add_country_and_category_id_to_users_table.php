@@ -15,7 +15,7 @@ class AddCountryAndCategoryIdToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'country')) {
-                $table->string('country')->nullable();
+                $table->string('country_id')->nullable();
             }
             if (!Schema::hasColumn('users', 'category_id')) {
                 $table->integer('category_id')->nullable();

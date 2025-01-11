@@ -14,10 +14,12 @@ use App\Models\Education;
 use App\Models\Experience;
 use App\Models\Invoices;
 use App\Models\JobMerging;
+use App\Models\JobApplications;
 use App\Models\Language;
 use App\Models\MySkill;
 use App\Models\Project;
-use App\Models\States;
+use App\Models\State;
+use App\Models\City;
 use App\Models\User;
 use App\Traits\Executable;
 use Illuminate\Contracts\Foundation\Application;
@@ -28,6 +30,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
+
+
+
 
 class UserController extends Controller
 {
@@ -48,12 +54,16 @@ class UserController extends Controller
 
     public function getAdminIndex()
     {
+        $user = Auth::user();
         $messages = ChatMessages::where('sender_id', Auth::user()->id)->orWhere('receiver_id', Auth::user()->id)->count();
         $jobs = Invoices::where('user_id', Auth::user()->id)->count();
         $service = ArtisanServices::where('user_id', Auth::user()->id)->count();
+        $galleryImages = ArtisanGallery::where('user_id', Auth::user()->id)->get();
+        $identity = $user->identity;
 
 
-        return view('users.dashboard', compact('service', 'jobs', 'messages'));
+
+        return view('users.dashboard', compact('service', 'jobs', 'messages', 'galleryImages', 'identity', 'user'));
     }
 
     public function getJobs()
@@ -63,17 +73,83 @@ class UserController extends Controller
             ->join('employer_jobs', 'job_mergings.employer_id', '=', 'employer_jobs.user_id')
             ->select('job_mergings.*', 'employer_jobs.*')
             ->get();
-        return view('users.job', compact('jobs'));
+
+        $applications = JobApplications::where('user_id', Auth::id())
+            ->with('job') // Assuming a `job` relation on `JobApplications`
+            ->get();
+
+        return view('users.job', compact('jobs', 'applications'));
     }
+
+
+
+
 
 
     public function getProfile()
     {
-        $states = States::all();
+
+        
+        $states = State::all();
         $country = Country::all();
         $category = BusinessCategory::all();
         // $states = States::all();
-        return view('users.profile', compact(['states', 'country', 'category']));
+        $user = Auth::user();
+
+        // Fetch education data
+
+        $gallery = ArtisanGallery::where('user_id', Auth::user()->id)->get();
+        $award = AwardsAndCertificates::where('user_id', $user->id)->get();
+        $education = Education::where('user_id', $user->id)->get();
+        $skills = MySkill::where('user_id', $user->id)->get();
+        $experience = Experience::where('user_id', Auth::user()->id)->get();
+        // Fetch other user-related data as needed
+        $projects = Project::where('user_id', $user->id)->get();
+        $languages = Language::where('user_id', $user->id)->get();
+
+        $socialMedia = json_decode($user->social_media, true);
+
+// Separate handling based on user type
+$socialMedia = json_decode($user->social_media, true) ?? [];
+
+// Separate handling based on user type
+$facebook = $socialMedia['facebook'] ?? null;
+$instagram = $socialMedia['instagram'] ?? null;
+
+if ($user->is_influencer) {
+    // Filter and reindex platforms to ensure proper structure
+    $platforms = array_filter($socialMedia, function ($platform) {
+        return is_array($platform) && isset($platform['platform'], $platform['followers'], $platform['handle']);
+    });
+    $platforms = array_values($platforms); // Reindex the array to avoid gaps in indices
+} else {
+    $platforms = [
+        ['platform' => 'Facebook', 'followers' => null, 'handle' => $facebook],
+        ['platform' => 'Instagram', 'followers' => null, 'handle' => $instagram],
+    ];
+}
+
+        // dd($experience);
+        $cities = City::where('state_id', $user->state_id)->get();  
+        $listed = [
+            'experience' => $experience,
+            'states' => $states,
+            'country' => $country,
+            'category' => $category,
+            'user' => $user,
+            'education' => $education,
+            'projects' => $projects,
+            'languages' => $languages,
+            'skills' => $skills,
+            'award' => $award,
+            'gallery' => $gallery,
+            'facebook'=> $facebook,
+            'instagram' => $instagram,
+            'platforms' => $platforms,
+            'cities' => $cities,
+
+        ];
+        return view('users.profile', $listed);
     }
 
     public function getEducation()
@@ -239,7 +315,9 @@ class UserController extends Controller
 
     public function getChangePassword()
     {
-        return view('users.change-password');
+        $user = Auth::user();
+        
+        return view('users.change-password', compact('user'));
     }
 
 
@@ -280,188 +358,426 @@ class UserController extends Controller
     }
 
 
-    // public function updateProfile(Request $request)
-    // {
-
-    //     if (Auth::user()->state === $request->state) {
-    //         $state = Auth::user()->state;
-    //     } else {
-    //         $state = States::where('id', $request["state"])->value('name');
-    //     }
-
-    //     $post = Auth::user();
-    //     $post->fill($request->only([
-    //         'full_name',
-    //         'identity',
-    //         'availability',
-    //         'phone',
-    //         'date_of_birth',
-    //         'street_address',
-    //         'city',
-    //         'state',
-    //         'profile_image',
-    //         'Location_address',
-    //         'delivery_address',
-    //         'business_category',
-    //         'facebook',
-    //         'instagram',
-    //         'work_experience',
-    //         'website_address',
-    //         'service_description',
-    //         'agreement_status',
-    //         'compensation_type',
-    //         'job_preference',
-    //         'min_amount',
-    //         'max_amount',
-    //         'usd_rate',
-    //         'gbp_rate',
-    //         'eur_rate',
-    //         'ngn_rate',
-    //     ]));
-
-    //     $post->update();
-
-
-    //     return back()->withInput()->with('response', "updated successfully");
-    // }
-
-    public function storeUser(Request $request)
+    public function updateProfile(Request $request)
     {
-        $user = Auth::user();
-        $data = $request->except('skills', 'school', 'project_title', 'language', 'education_id', 'project_id', 'language_id', 'resume');
 
-        if ($user->identity == null) {
-            $data['identity'] = CommonHelpers::generateCramp("user");
+        if (Auth::user()->state_id === $request->state) {
+            $state_id = Auth::user()->state_id;
+        } else {
+            $state_id = State::where('id', $request["state_id"])->value('name');
         }
 
-        if (!empty($data)) {
-            $user->update($data);
-        }
+        $post = Auth::user();
+        $post->fill($request->only([
+            'full_name',
+            'identity',
+            'availability',
+            'phone',
+            'date_of_birth',
+            'street_address',
+            'city_id',
+            'state_id',
+            'profile_image',
+            'location_address',
+            'delivery_address',
+            'business_category',
+            'business_name',
+            'facebook',
+            'instagram',
+            'work_experience',
+            'website_address',
+            'service_description',
+            'agreement_status',
+            'compensation_type',
+            'job_preference',
+            'min_amount',
+            'max_amount',
+            'usd_rate',
+            'gbp_rate',
+            'eur_rate',
+            'ngn_rate',
+            'video_url',
+            'video_file',
+            'company_logo',
+            'skillLevel'
+        ]));
 
-        // Process education data
-        if ($request->has('school')) {
-            foreach ($request->school as $key => $school) {
-                $educationId = $request->education_id[$key] ?? null;
+        $post->update();
 
-                $education = Education::where('user_id', $user->id)
-                    ->where('title', $school)
-                    ->first();
 
-                if ($education) {
-                    $education->update([
-                        'desc' => $request->degree[$key] ?? null,
-                        'purpose' => $request->field_of_study[$key] ?? null,
-                        'year' => $request->year[$key] ?? null,
-                    ]);
-                } else {
-                    Education::create([
-                        'user_id' => $user->id,
-                        'title' => $school,
-                        'desc' => $request->degree[$key] ?? null,
-                        'purpose' => $request->field_of_study[$key] ?? null,
-                        'year' => $request->year[$key] ?? null,
-                    ]);
-                }
-            }
-        }
-
-        // Process project data
-        if ($request->has('project_title')) {
-            foreach ($request->project_title as $key => $title) {
-                $project = Project::where('user_id', $user->id)
-                    ->where('title', $title)
-                    ->first();
-
-                if ($project) {
-                    $project->update([
-                        'description' => $request->project_description[$key] ?? null,
-                        'url' => $request->project_url[$key] ?? null,
-                    ]);
-                } else {
-                    Project::create([
-                        'user_id' => $user->id,
-                        'title' => $title,
-                        'description' => $request->project_description[$key] ?? null,
-                        'url' => $request->project_url[$key] ?? null,
-                    ]);
-                }
-            }
-        }
-
-        // Process language data
-        if ($request->has('language')) {
-            foreach ($request->language as $key => $language) {
-                $lang = Language::where('user_id', $user->id)
-                    ->where('language', $language)
-                    ->first();
-
-                if ($lang) {
-                    $lang->update([
-                        'language' => $language,
-                    ]);
-                } else {
-                    Language::create([
-                        'user_id' => $user->id,
-                        'language' => $language,
-                    ]);
-                }
-            }
-        }
-
-        // Process skills data
-        if ($request->has('skills')) {
-            $skills = explode(',', $request->skills);
-            foreach ($skills as $skill) {
-                $skill = trim($skill);
-
-                if (!empty($skill)) {
-                    $existingSkill = MySkill::where('user_id', $user->id)
-                        ->where('title', $skill)
-                        ->first();
-
-                    if (!$existingSkill) {
-                        MySkill::create([
-                            'title' => $skill,
-                            'user_id' => $user->id,
-                            'url' => strtolower(CommonHelpers::create_unique_slug($skill, "my_skills", "url")),
-                        ]);
-                    }
-                }
-            }
-        }
-
-        // Process resume upload
-        if ($request->hasFile('resume')) {
-            $resume = $request->file('resume');
-
-            // Validate that the file is either a PDF or DOC/DOCX
-            $request->validate([
-                'resume' => 'mimes:pdf,doc,docx|max:10240', // Max file size is 10MB
-            ]);
-
-            $filename = time() . "." . $resume->getClientOriginalExtension();
-
-            // Create directory if it does not exist
-            $directoryPath = "profile/resume/" . Auth::user()->id . "/";
-            if (!is_dir($directoryPath)) {
-                File::makeDirectory(public_path($directoryPath), 0777, true);
-            }
-
-            // Define the location where the resume will be stored
-            $location = public_path($directoryPath);
-
-            // Move the uploaded file to the specified location
-            $resume->move($location, $filename);
-
-            // Update the user's resume path in the database
-            $user->update(['resume' => $directoryPath . $filename]);
-        }
-
-        return back()->withInput()->with('response', "Updated successfully");
+        return back()->withInput()->with('response', "updated successfully");
     }
 
 
 
+public function storeUser(Request $request)
+{
+    $user = Auth::user();
+    $data = $request->except(
+        'skills', 'school', 'project_title', 'language', 'education_id', 'project_id',
+        'language_id', 'award_id', 'resume', 'title', 'experience_id', 'start_year',
+        'end_year', 'currently_working', 'role', 'service_description', 'profile_image',
+        'delete_profile_image', 'company_logo', 'video_file', 'video_url', 'social_media'
+    );
+      //dd($request);
+    try {
+
+        $rules = [
+            'service_description' => 'nullable|string|max:10000',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'video_file' => 'nullable|mimes:mp4,mov,avi|max:20480', // 20MB max size
+            'video_url' => 'nullable|url',
+            'facebook' => 'nullable|url',
+            'instagram' => 'nullable|url',
+            'social_media.*.platform' => 'required_if:is_influencer,1|string',
+            'social_media.*.followers' => 'required_if:is_influencer,1|integer|min:0',
+            'social_media.*.handle' => 'required_if:is_influencer,1|string',
+            'skills' => 'nullable|string',
+            'school.*' => 'nullable|string',
+            'project_title.*' => 'nullable|string',
+            'award.*' => 'nullable|string',
+            'title.*' => 'nullable|string',
+            'experience_id.*' => 'nullable|integer',
+            'start_year.*' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'end_year.*' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'resume' => 'nullable|mimes:pdf,doc,docx|max:10240', // 10MB max size
+        ];
+
+        $request->validate($rules);
+
+
+        if (is_null($user->identity)) {
+            $data['identity'] = CommonHelpers::generateCramp("user");
+        }
+
+        // Update basic user information
+        if (!empty($data)) {
+            $user->update($data);
+        }
+
+        // Handle Profile Picture Update
+        if ($request->has('update_profile_image')) {
+            $request->validate(['profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
+            $user->profile_image = $this->handleFileUpload($request->file('profile_image'), 'profile/profile_image', $user->id);
+            $user->save();
+            return redirect()->back()->with('success', 'Profile picture updated successfully.');
+        }
+
+        //Process Video File
+        if ($request->hasFile('video_file')) {
+            $videoFile = $request->file('video_file');
+            Log::info('Uploading video file', [
+                'original_name' => $videoFile->getClientOriginalName(),
+                'size' => $videoFile->getSize(),
+                'mime_type' => $videoFile->getMimeType(),
+            ]);
+
+            $directoryPath = "profile/videos/" . $user->id . "/";
+            $filename = 'video_' . time() . '.' . $videoFile->getClientOriginalExtension();
+
+            // Ensure directory exists
+            if (!is_dir(public_path($directoryPath))) {
+                File::makeDirectory(public_path($directoryPath), 0777, true);
+            }
+
+            // Delete old video if exists
+            if ($user->video_file && File::exists(public_path($user->video_file))) {
+                File::delete(public_path($user->video_file));
+            }
+
+            // Save new video file
+            $videoFile->move(public_path($directoryPath), $filename);
+
+            // Update user's video file path in the database
+            $user->update(['video_file' => $directoryPath . $filename]);
+        }
+
+
+        // Process Video URL
+        if ($request->has('video_url')) {
+            $user->update(['video_url' => $request->video_url]);
+        }
+
+        // Handle Social Media based on influencer status
+        if ($request->has('is_influencer')) {
+            $isInfluencer = (bool) $request->is_influencer;
+            // Validate social media input for all users
+            $request->validate([
+                'social_media.*.platform' => 'required|string',
+                'social_media.*.handle' => 'required|string',
+                'social_media.*.followers' => 'nullable|integer|min:0',
+            ]);
+            $socialMedia = $request->input('social_media', []); // Unified input for all users
+            // Update the user record
+            $user->update([
+                'is_influencer' => $isInfluencer,
+                'social_media' => json_encode($socialMedia), // Store as JSON
+            ]);
+        }
+
+            // Process Education Data
+            if ($request->has('school')) {
+                foreach ($request->school as $key => $school) {
+                    if (!empty($school)) {
+                        Education::updateOrCreate(
+                            [
+                                'user_id' => $user->id,
+                                'id' => $request->education_id[$key] ?? null,
+                            ],
+                            [
+                                'title' => $school,
+                                'desc' => $request->degree[$key] ?? null,
+                                'purpose' => $request->field_of_study[$key] ?? null,
+                                'year' => $request->year[$key] ?? null,
+                            ]
+                        );
+                    }
+                }
+            }
+
+
+
+                //Process  Gallery image
+            if ($request->hasFile('gallery_images')) {
+                foreach ($request->file('gallery_images') as $file) {
+                    $filename = 'SwiftedgeVA-' . time() . '_' . $file->getClientOriginalName();
+                    $directoryPath = "profile/gallery/" . $user->id . "/";
+                    if (!is_dir(public_path($directoryPath))) {
+                        File::makeDirectory(public_path($directoryPath), 0777, true);
+                    }
+                    $file->move(public_path($directoryPath), $filename);
+                    ArtisanGallery::create([
+                        'user_id' => $user->id,
+                        'images' => $directoryPath . $filename,
+                    ]);
+                }
+            }
+                // Handle deletion of gallery images
+            if ($request->has('delete_gallery_images')) {
+                foreach ($request->delete_gallery_images as $imageId) {
+                    $gallery = ArtisanGallery::find($imageId);
+                    if ($gallery && File::exists(public_path($gallery->images))) {
+                        File::delete(public_path($gallery->images));
+                    }
+                    $gallery?->delete();
+                }
+            }
+
+
+            if ($request->has('award')) {
+                foreach ($request->award as $key => $award) {
+                    if (!empty($award)) {
+                        AwardsAndCertificates::updateOrCreate(
+                            [
+                                'user_id' => $user->id,
+                                'id' => $request->award_id[$key] ?? null,
+                            ],
+                            [
+                                'title' => $award,
+                                'purpose' => $request->purpose[$key] ?? null,
+                                'desc' => $request->description[$key] ?? null,
+                                'year' => $request->year[$key] ?? null,
+                            ]
+                        );
+                    }
+                }
+            }
+
+
+         
+            if ($request->has('experience')) {
+                foreach ($request->experience as $key => $experience) {
+                    if (!empty($experience)) {
+                        $startYear = $request->start_year[$key] ?? null;
+                        $endYear = isset($request->currently_working[$key]) && $request->currently_working[$key]
+                            ? 'Present'
+                            : ($request->end_year[$key] ?? null);
+                        Experience::updateOrCreate(
+                            [
+                                'user_id' => $user->id,
+                                'id' => $request->experience_id[$key] ?? null,
+                            ],
+                            [
+                                'title' => $experience,
+                                'purpose' => $request->role[$key] ?? null,
+                                'desc' => $request->desc[$key] ?? null,
+                                'year' => $startYear . ' - ' . $endYear,
+                                'currently_working' => isset($request->currently_working[$key]) ? true : false,
+                            ]
+                        );
+                    }
+                }
+            }
+
+
+             // Process Skills Data
+            if ($request->has('skills')) {
+                $submittedSkills = explode(',', $request->skills);
+                $submittedSkills = array_map('trim', $submittedSkills);
+                // Add new skills
+                foreach ($submittedSkills as $skill) {
+                    if (!empty($skill)) {
+                        MySkill::firstOrCreate([
+                            'user_id' => $user->id,
+                            'title' => $skill,
+                        ]);
+                    }
+                }
+                // Remove skills not in the submitted list
+                MySkill::where('user_id', $user->id)
+                    ->whereNotIn('title', $submittedSkills)
+                    ->delete();
+            }
+            // Process Resume Upload
+                if ($request->hasFile('resume')) {
+                    $resume = $request->file('resume');
+                    $request->validate([
+                        'resume' => 'mimes:pdf,doc,docx|max:10240', // Max file size: 10MB
+                    ]);
+                    $filename = time() . '.' . $resume->getClientOriginalExtension();
+                    $directoryPath = "profile/resume/" . $user->id . "/";
+                    if (!is_dir(public_path($directoryPath))) {
+                        File::makeDirectory(public_path($directoryPath), 0777, true);
+                    }
+                    $resume->move(public_path($directoryPath), $filename);
+                    $user->update(['resume' => $directoryPath . $filename]);
+                }
+
+                // Process Language Data
+                if ($request->has('language')) {
+                    foreach ($request->language as $key => $language) {
+                        if (!empty($language)) {
+                            Language::updateOrCreate(
+                                [
+                                    'user_id' => $user->id,
+                                    'id' => $request->language_id[$key] ?? null,
+                                ],
+                                [
+                                    'language' => $language,
+                                ]
+                            );
+                        }
+                    }
+                }
+
+                 // Process Project Data
+                    if ($request->has('project_title')) {
+                        foreach ($request->project_title as $key => $title) {
+                            if (!empty($title)) {
+                                Project::updateOrCreate(
+                                    [
+                                        'user_id' => $user->id,
+                                        'id' => $request->project_id[$key] ?? null,
+                                    ],
+                                    [
+                                        'title' => $title,
+                                        'description' => $request->project_description[$key] ?? null,
+                                        'url' => $request->project_url[$key] ?? null,
+                                    ]
+                                );
+                            }
+                        }
+                    }
+
+
+
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Profile updated successfully.']);
+        }
+
+        return back()->withInput()->with('response', 'Profile updated successfully.');
+
+  
+
+    //    } catch (\Exception $e) {
+    //     $errorMessage = 'Unexpected Error: ' . $e->getMessage();
+    //     Log::error($errorMessage);
+
+    //     // SweetAlert-friendly response for Ajax
+    //     if ($request->ajax()) {
+    //         return response()->json(['success' => false, 'message' => $errorMessage]);
+    //     }
+
+    //     return back()->withErrors($errorMessage);
+    // }
+
+} catch (\Illuminate\Validation\ValidationException $e) {
+    // Log the detailed validation errors
+    Log::error('Validation Error: ', $e->errors());
+
+    // Use SweetAlert to display all validation errors
+    $errorMessages = collect($e->errors())
+        ->map(function ($messages, $field) {
+            return "<strong>{$field}</strong>: " . implode('<br>', $messages);
+        })
+        ->implode('<br><br>');
+
+    return back()->with('validationErrors', $errorMessages);
+} catch (\Exception $e) {
+    // Log unexpected errors
+    Log::error('Unexpected Error: ', [
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+    ]);
+
+    return back()->with('error', 'An unexpected error occurred. Please try again.');
+}
+}
+
+
+
+
+    private function handleFileUpload($file, $folder, $userId, $existingFilePath = null)
+    {
+        $customPath = public_path("{$folder}/{$userId}");
+
+        // Delete the existing file if it exists
+        if ($existingFilePath && File::exists(public_path($existingFilePath))) {
+            File::delete(public_path($existingFilePath));
+        }
+
+        // Ensure the directory exists
+        if (!File::exists($customPath)) {
+            File::makeDirectory($customPath, 0755, true);
+        }
+
+        // Save the new file
+        $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+        $file->move($customPath, $fileName);
+
+        // Return the relative path for database storage
+        return "{$folder}/{$userId}/{$fileName}";
+    }
+
+
+
+
+    public function deleteEducation($id)
+    {
+        $education = Education::findOrFail($id);
+        $education->delete();
+
+        return response()->json(['success' => 'Education record deleted successfully.']);
+    }
+
+    public function deleteExperience($id)
+    {
+        $experience = Experience::findOrFail($id);
+        $experience->delete();
+
+        return response()->json(['success' => 'Experience record deleted successfully.']);
+    }
+
+
+    public function deleteAward($id)
+    {
+        $award =  AwardsAndCertificates::findOrFail($id);
+        $award->delete();
+
+        return response()->json(['success' => 'Award / Certificate record deleted successfully.']);
+    }
 
 
 
@@ -499,18 +815,55 @@ class UserController extends Controller
 
         return back()->withInput()->with('response', "added successfully");
     }
-    
+
     public function destroySkills($id)
     {
         $skill = MySkill::findOrFail($id);
-        
+
         // Ensure the skill belongs to the authenticated user before deleting
         if ($skill) {
             $skill->delete();
             return redirect()->back()->with('success', 'Skill deleted successfully.');
         }
-    
+
         return redirect()->back()->with('error', 'You are not authorized to delete this skill.');
+    }
+
+    public function deleteGalleryImage($id)
+    {
+        $image = ArtisanGallery::findOrFail($id);
+
+        // Delete the file from the directory
+        if (File::exists(public_path($image->images))) {
+            File::delete(public_path($image->images));
+        }
+
+        // Delete the record from the database
+        $image->delete();
+
+        return redirect()->back()->with('success', 'Gallery image deleted successfully.');
+    }
+
+
+
+    public function getStates($countryId)
+    {
+        try {
+            $states = State::where('country_id', $countryId)->get(['id', 'name']);
+            return response()->json($states);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unable to fetch states. Please try again.'], 500);
+        }
+    }
+
+    public function getCities($stateId)
+    {
+        try {
+            $cities = City::where('state_id', $stateId)->get(['id', 'name']);
+            return response()->json($cities);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unable to fetch cities. Please try again.'], 500);
+        }
     }
 
 }

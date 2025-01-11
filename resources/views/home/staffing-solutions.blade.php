@@ -26,7 +26,7 @@
                 <ul class="mobile-app-btn-list">
                     <li><a href="{{route('index.staffing.employer')}}" class="playstote-btn">Employer? Request Now <i class="ri-google-play-line"></i></a>
                     </li>
-                    <li><a href="{{route('index.register.artisan')}}" class="applestore-btn">Job-Seeker? Apply Now <i class="ri-app-store-line"></i></a></li>
+                    <li><a href="{{route('index.register')}}" class="applestore-btn">Job-Seeker? Apply Now <i class="ri-app-store-line"></i></a></li>
                 </ul>
 
             </div>

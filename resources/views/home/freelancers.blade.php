@@ -1,298 +1,207 @@
 @extends('home.layouts.content')
 @section('content')
-    <div id="apus-main-content">
-        <section id="main-container" class="page-job-board inner layout-type-default inline-margin-top">
 
-            <div class="freelancers-top-content-wrapper" style="margin-bottom: 0px !important; height:150px;">
-                <div data-elementor-type="section" data-elementor-id="2077" class="elementor elementor-2077">
-                    <section
-                        class="elementor-section elementor-top-section elementor-element elementor-element-1ea5391 elementor-section-stretched elementor-section-boxed elementor-section-height-default elementor-section-height-default"
-                        data-id="1ea5391" data-element_type="section"
-                        data-settings="{&quot;stretch_section&quot;:&quot;section-stretched&quot;,&quot;background_background&quot;:&quot;classic&quot;}"
-                        style="width: 1440px; left: 0px;">
-                        <div class="elementor-container elementor-column-gap-extended">
-                            <div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-e183e00"
-                                data-id="e183e00" data-element_type="column">
-                                <div class="elementor-widget-wrap elementor-element-populated">
-                                    <div class="elementor-element elementor-element-2d079f7 elementor-widget elementor-widget-heading"
-                                        data-id="2d079f7" data-element_type="widget" data-widget_type="heading.default">
-                                        <div class="elementor-widget-container">
-                                            <style>
-                                                /*! elementor - v3.17.0 - 08-11-2023 */
-                                                .elementor-heading-title {
-                                                    padding: 0;
-                                                    margin: 0;
-                                                    line-height: 1
-                                                }
+<div class="bg-body-tertiary">
 
-                                                .elementor-widget-heading .elementor-heading-title[class*=elementor-size-]>a {
-                                                    color: inherit;
-                                                    font-size: inherit;
-                                                    line-height: inherit
-                                                }
+    <div class="container pt-4 pb-5 mb-xxl-3 ">
 
-                                                .elementor-widget-heading .elementor-heading-title.elementor-size-small {
-                                                    font-size: 15px
-                                                }
+        <!-- Breadcrumb -->
+        <nav class="pb-2" aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="home-doctors.html">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">All Services </li>
+          </ol>
+        </nav>
 
-                                                .elementor-widget-heading .elementor-heading-title.elementor-size-medium {
-                                                    font-size: 19px
-                                                }
+        <h1 class="h2 pb-lg-2">All Freelancers</h1>
 
-                                                .elementor-widget-heading .elementor-heading-title.elementor-size-large {
-                                                    font-size: 29px
-                                                }
 
-                                                .elementor-widget-heading .elementor-heading-title.elementor-size-xl {
-                                                    font-size: 39px
-                                                }
+        <div class="col-md-5 col-lg-12">
+            <div class="position-relative">
+              <form class="bg-white border rounded-4 p-2 mb-4 mb-md-5" data-bs-theme="light" action="{{ route('changeCurrency') }}" method="POST">
+                  @csrf
 
-                                                .elementor-widget-heading .elementor-heading-title.elementor-size-xxl {
-                                                    font-size: 59px
-                                                }
-                                            </style>
-                                            <h2 class="elementor-heading-title elementor-size-default">All
-                                                Freelancers</h2>
-                                        </div>
-                                    </div>
-                                    <div class="elementor-element elementor-element-4768ef7 elementor-widget elementor-widget-text-editor"
-                                        data-id="4768ef7" data-element_type="widget" data-widget_type="text-editor.default">
-                                        <div class="elementor-widget-container">
-                                            <style>
-                                                /*! elementor - v3.17.0 - 08-11-2023 */
-                                                .elementor-widget-text-editor.elementor-drop-cap-view-stacked .elementor-drop-cap {
-                                                    background-color: #69727d;
-                                                    color: #fff
-                                                }
+                  <div class="d-flex flex-column flex-md-row gap-3 p-1">
+                    <div class="d-flex flex-column flex-sm-row w-100 gap-2 gap-sm-3">
+                      <div class="position-relative w-100">
+                        <i class="fi-search position-absolute top-50 start-0 translate-middle-y fs-xl text-secondary-emphasis ms-2"></i>
+                        <select class="form-select form-select-lg form-icon-start border-0" name="job_category" data-select="{
+                          &quot;classNames&quot;: {
+                            &quot;containerInner&quot;: [&quot;form-select&quot;, &quot;form-select-lg&quot;, &quot;form-icon-start&quot;, &quot;border-0&quot;]
+                          },
+                          &quot;searchEnabled&quot;: true
+                        }" aria-label="Location select" >
 
-                                                .elementor-widget-text-editor.elementor-drop-cap-view-framed .elementor-drop-cap {
-                                                    color: #69727d;
-                                                    border: 3px solid;
-                                                    background-color: transparent
-                                                }
+                          <option value="">Select Service Category</option>
+                          @foreach (\App\Models\BusinessCategory::all() as $row)
+                          <option value="{{ $row->id }}">{{ $row->title }}</option>
+                          @endforeach
 
-                                                .elementor-widget-text-editor:not(.elementor-drop-cap-view-default) .elementor-drop-cap {
-                                                    margin-top: 8px
-                                                }
 
-                                                .elementor-widget-text-editor:not(.elementor-drop-cap-view-default) .elementor-drop-cap-letter {
-                                                    width: 1em;
-                                                    height: 1em
-                                                }
+                        </select>
+                      </div>
+                      <hr class="d-sm-none m-0">
+                      <hr class="vr d-none d-sm-block my-2">
+                      <div class="position-relative w-100" style="max-width: 150px">
+                        <i class="fi-user position-absolute top-50 start-0 translate-middle-y fs-xl text-secondary-emphasis ms-2"></i>
+                        <select class="form-select form-select-lg form-icon-start border-0" name="filter-gender" data-select="{
+                          &quot;classNames&quot;: {
+                            &quot;containerInner&quot;: [&quot;form-select&quot;, &quot;form-select-lg&quot;, &quot;form-icon-start&quot;, &quot;border-0&quot;]
+                          },
+                          &quot;searchEnabled&quot;: true
+                        }" aria-label="Location select" >
+                          <option value="">Gender</option>
+                          <option value="Both">Both</option>
+                          <option value="Female">Female</option>
+                          <option value="Male">Male</option>
 
-                                                .elementor-widget-text-editor .elementor-drop-cap {
-                                                    float: left;
-                                                    text-align: center;
-                                                    line-height: 1;
-                                                    font-size: 50px
-                                                }
-
-                                                .elementor-widget-text-editor .elementor-drop-cap-letter {
-                                                    display: inline-block
-                                                }
-                                            </style>
-                                            Give your visitor a smooth online experience
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
+                        </select>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-lg btn-primary">Search</button>
+                  </div>
+                </form>
             </div>
+          </div>
 
 
-            <div class="layout-freelancer-sidebar main-content p-4 inner">
-
-                <a href="javascript:void(0)" class="mobile-sidebar-btn d-lg-none btn-left"><i class="ti-menu-alt"></i></a>
-                <div class="mobile-sidebar-panel-overlay"></div>
-                @include('home.layouts.freelancer-side-bar')
-                <div class="row">
-
-                    <div id="main-content" class="col">
-                        <main id="main" class="site-main layout-type-default" role="main">
-
-                            <div class="freelancers-listing-wrapper main-items-wrapper layout-type-grid"
-                                data-display_mode="grid">
-                                <div class="wrapper-fillter">
-                                    <div class="apus-listing-filter d-sm-flex align-items-center">
-                                        <div class="results-count">
-                                            Showing all {{ $freelancers->count() }} results
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="freelancers-wrapper items-wrapper">
-                                    <div class="row">
-
-                                        @foreach ($freelancers as $row)
-                                            @if($row->identity)
-                                            <div class="col-sm-3">
-                                                <div class="freelancer-item position-relative">
+          <div class="d-flex align-items-center gap-2 gap-sm-3 mb-3 mb-sm-4">
+            <div class="fs-sm text-nowrap">
+                <span class="d-none d-sm-inline"> Showing {{ $freelancers->firstItem() }} to {{ $freelancers->lastItem() }} of {{ $freelancers->total() }} result </div>
 
 
-                                                    <div class="freelancer-logo d-flex align-items-center">
 
-                                                        <div class="avatar">
-                                                            @php
-                                                                $imagePath = $row->profile_image;
-                                                            @endphp
-                                                            
-                                                            @if (!empty($row->profile_image) && file_exists(public_path($imagePath)))
-                                                                <img src="{{ asset($imagePath) }}" class="avatar-img rounded-circle" alt=""
-                                                                     srcset="{{ asset($imagePath) }}">
-                                                            @else
-                                                                <img src="{{ asset('freelancer.png') }}" class="avatar-img rounded-circle" alt=""
-                                                                     srcset="{{ asset('freelancer.png') }}">
-                                                            @endif
-
-                                                        </div>
-
-                                                    </div>
+          </div>
 
 
-                                                    <style>
-                                                        .freelancer-logo {
-                                                            width: 100px !important;
-                                                        }
-
-                                                        .avatar img {
-                                                            width: 100px !important;
-                                                            /* Adjust as needed */
-                                                            height: 100px !important;
-                                                            /* Adjust as needed */
-                                                            object-fit: cover !important;
-                                                            /* Ensures the image covers the entire area */
-                                                        }
-                                                    </style>
-                                                    <div class="inner-bottom">
-                                                        <div class="text-center">
-                                                            <h2 class="freelancer-title">
-                                                                <a href="{{ url('user/' . $row->identity) }}"
-                                                                    rel="bookmark">
-                                                                    {{ ucwords($row->full_name) }}
-
-                                                                </a>
-                                                            </h2>
-
-                                                            <div class="freelancer-tags">
-                                                                                            @foreach($row->mySkills as $skill)
-                                                                                        <a class="tag-freelancer"
-                                                                                            href="#">{{ $skill->title }}</a>
-                                                                                            
-                                                                                        @endforeach
-
-                                                                                    </div>
-                                                            <div class="rating-reviews">
-                                                                <i class="fa fa-star"></i>
-
-                                                                <span
-                                                                    class="rating text-link">{{ \App\Helpers\CommonHelpers::freelancerRating($row->id) }}.0</span>
-                                                                <span
-                                                                    class="text">({{ \App\Models\ServiceRating::query()->where('user_id', $row->id)->count() }}
-                                                                    Reviews)</span>
-
-                                                            </div>
-                                                        </div>
-                                                        <div class="freelancer-metas d-flex align-items-center">
-                                                            <div class="freelancer-location with-title">
-                                                                <strong>Location:</strong>
-                                                                @if (is_numeric($row->state))
-                                                                     {{ $row->stateName->name ?? 'Remote' }}
-                                                                @elseif (preg_match('/^[a-zA-Z]+$/', $row->state))
-                                                                    {{ $row->state }}
-                                                                @else
-                                                                    Remote
-                                                                @endif
-
-                                                            </div>
-                                                            <div class="freelancer-salary with-title">
-                                                                <strong>Rate:</strong>
-                                                                <span>
-                                                                    <span class="woocommerce-Price-amount amount">
-                                                                        <bdi>
-                                                                            <span class="woocommerce-Price-currencySymbol">
-                                                                                {{ $currencySymbols[$currency] }}</span>
-                                                                            {{-- @php
-                                                                                $viewerCurrency = $currency;
-                                                                                $conversionRates = $conversionRates;
-                                                                                $currencySymbols = $currencySymbols;
-                                                                                $rate = $row->rate;
-                                                                                $artisanCurrency = $row->currency;
-
-                                                                                // Ensure both currencies are available in the conversion rates array
-                                                                                if (
-                                                                                    isset(
-                                                                                        $conversionRates[
-                                                                                            $artisanCurrency
-                                                                                        ],
-                                                                                    ) &&
-                                                                                    isset(
-                                                                                        $conversionRates[
-                                                                                            $viewerCurrency
-                                                                                        ],
-                                                                                    )
-                                                                                ) {
-                                                                                    // Calculate the converted rate
-                                                                                    $convertedRate =
-                                                                                        $rate *
-                                                                                        ($conversionRates[
-                                                                                            $viewerCurrency
-                                                                                        ] /
-                                                                                            $conversionRates[
-                                                                                                $artisanCurrency
-                                                                                            ]);
-                                                                                } else {
-                                                                                    // If conversion rate not found, fallback to the original rate
-                                                                                    $convertedRate = $rate;
-                                                                                }
-
-                                                                                // Get the currency symbol
-                                                                                $currencySymbol =
-                                                                                    $currencySymbols[$viewerCurrency] ??
-                                                                                    '';
-                                                                            @endphp --}}
-                                                                            <span class="price-text">
-                                                                                @if ($currencySymbols[$currency] === '$')
-                                                                                    {{ $row->usd_rate }}/hr
-                                                                                @elseif ($currencySymbols[$currency] === '₦')
-                                                                                    {{ $row->ngn_rate }}/hr
-                                                                                @elseif ($currencySymbols[$currency] === '£')
-                                                                                    {{ $row->gbp_rate }}/hr
-                                                                                @elseif ($currencySymbols[$currency] === '€')
-                                                                                    {{ $row->eur_rate }}/hr
-                                                                                @endif
-                                                                            </span>
-                                                                        </bdi>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        @if (!$row->identity == null)
-                                                            <div class="freelancer-link">
-                                                                <a href="{{ url('user/' . $row->identity) }}"
-                                                                    class="btn btn-theme-rgba10 w-100 radius-sm">View
-                                                                    Profile <i class="next flaticon-right-up"></i></a>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @endif
-                                        @endforeach
-
-                                    </div>
-                                </div>
+    <section class="bg-body-tertiary py-2 py-sm-3 py-md-4 py-lg-5">
+        <div class="container my-xxl-3">
+          <div class="mx-n2">
+            <div class="swiper px-2 pb-4" data-swiper="{
+              &quot;slidesPerView&quot;: 1,
+              &quot;spaceBetween&quot;: 24,
+              &quot;pagination&quot;: {
+                &quot;el&quot;: &quot;.swiper-pagination&quot;,
+                &quot;clickable&quot;: true
+              },
+              &quot;breakpoints&quot;: {
+                &quot;500&quot;: {
+                  &quot;slidesPerView&quot;: 2
+                },
+                &quot;992&quot;: {
+                  &quot;slidesPerView&quot;: 4
+                }
+              }
+            }">
 
 
-                            </div>
-                            {{ $freelancers->links('home.util.pagination') }}
+              <div class="swiper-wrapper">
 
-                        </main><!-- .site-main -->
-                    </div><!-- .content-area -->
+                <!-- Event listing card -->
+                @foreach (\App\Models\User::query()->where('is_admin', 0)->whereNotNull('identity')->limit(30)->get() as $row)
+                @php
+                    $imagePath = $row->profile_image;
+                @endphp
+                @if ($row->identity)
+                <div class="swiper-slide h-auto">
+                    <article class="card h-100 hover-effect-scale hover-effect-opacity border-0 shadow placeholder-wave">
+                        <div class="position-absolute  top-0 end-0 z-2 hover-effect-target  pt-1 pt-sm-0 pe-1 pe-sm-0 mt-2 mt-sm-3 me-2 me-sm-3">
+                      
+                       
+                        @if ($row->is_influencer)
+                        <span class="badge fs-xm m-2  text-bg-success">Top Influencer</span>
+                        @endif
 
+                      
+                    </div>
+                    <div class="bg-body-light rounded overflow-hidden">
+                      <div class="ratio hover-effect-target" style="--fn-aspect-ratio: calc(290 / 416 * 100%)">
+                        <img src="{{ !empty($row->profile_image) && file_exists(public_path($imagePath)) ? asset($imagePath) : asset('avata2r.png') }}" alt="Image" class="" style="object-fit: cover;" data-src="{{ !empty($row->profile_image) && file_exists(public_path($imagePath)) ? asset($imagePath) : asset('avata2r.png') }}">
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <ul class="list-unstyled flex-row flex-wrap align-items-center gap-2 fs-sm  placeholder-wave placeholder-glow">
+                        <li class="d-flex align-items-center">
+                            <i class="fi-star-filled fs-xl text-warning me-2 mb-2"> </i>
+                            <span class=""> {{ \App\Helpers\CommonHelpers::freelancerRating( $row->id) }}.0  </span>
+                             <span class=""> ( {{ \App\Models\ServiceRating::query()->where('service_id', $row->id)->count() }} Reviews )</span>
+                        </li>
+
+
+                        <li >{{ $row->category_id ?? 'Data Management' }}</li>
+                      </ul>
+                      <h3 class="h5 pt-1 mb-2 placeholder-glow">
+                        <a class="hover-effect-underline stretched-link" href="{{ url('user/' . $row->identity) }}">{{ ucwords($row->full_name) }}</a>
+                      </h3>
+                      <div class="d-flex align-items-center fs-sm placeholder-glow">
+                        <i class="fi-map-pin me-1"></i>
+                        {{ $row->state->name }}
+                      </div>
+                    </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between gap-3 bg-transparent border-0 pt-0 pb-4 placeholder-glow">
+                      <div class="h6 text-success mb-0">{{ $currencySymbols[$currency] }}
+                        @if ($currencySymbols[$currency] == '$')
+                        {{ $row->usd_rate }}/hr
+                        @elseif($currencySymbols[$currency] == '₦')
+                        {{ $row->ngn_rate }}/hr
+                        @elseif($currencySymbols[$currency] == '£')
+                        {{ $row->gbp_rate }}/hr
+                        @elseif($currencySymbols[$currency] == '€')
+                        {{ $row->eur_rate }}/hr
+                    @endif</div>
+                      <a href="{{ url('user/' . $row->identity) }}"class="btn btn-outline-dark position-relative z-2 placeholder-glow">View Profile <i class="fi-arrow-right pe-1"></i></a>
+                    </div>
+                  </article>
                 </div>
+                @endif
+                @endforeach
+
+              </div>
+
+              <!-- Pagination (Bullets) -->
+              <div class="swiper-pagination position-static mt-3 mt-md-4"></div>
             </div>
-        </section>
-    </div>
+          </div>
+
+          <!-- View all button -->
+          <div class="text-center pt-md-2 pt-lg-3">
+            {{-- <a class="btn btn-lg btn-primary" href="/freelancers">Load More Freelancer</a> --}}
+            {{ $freelancers->links('home.util.pagination') }}
+          </div>
+        </div>
+      </section>
+
+
+          <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{{-- <script>
+    $(document).ready(function() {
+        let offset = 12; // Initial offset, since we load the first 12 by default
+
+        $('#load-more').click(function() {
+            $.ajax({
+                url: '{{ route("freelancers") }}',
+                type: 'GET',
+                data: { offset: offset },
+                success: function(data) {
+                    if (data.length > 0) {
+                        data.forEach(freelancer => {
+                            $('#freelancer-list').append(`
+                                <div class="freelancer-item">
+                                    <p>${freelancer.service_description}</p>
+                                </div>
+                            `);
+                        });
+                        offset += data.length; // Update the offset for the next request
+                    } else {
+                        $('#load-more').hide(); // Hide button if no more data
+                    }
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+</script> --}}
+</div>
 @endsection

@@ -128,7 +128,7 @@
                                                                             method="post"
                                                                             id="_employer_register_fields_9499"
                                                                             enctype="multipart/form-data"
-                                                                            encoding="multipart/form-data">
+                                                                            encoding="multipart/form-data"> 
 
                                                                             {{ csrf_field() }}
 
@@ -399,4 +399,8 @@
             </div>
         </section>
     </div><!-- .site-content -->
+
+
+
+    
 @endsection

@@ -36,8 +36,13 @@ class CreateEmployerJobsTable extends Migration
             $table->longText('it_skills')->nullable();
             $table->longText('basic_salary')->nullable();
             $table->longText('allowances')->nullable();
-            $table->longText('state')->nullable();
-            $table->longText('city')->nullable();
+            $table->longText('country_id')->nullable();
+            $table->longText('state_id')->nullable();
+            $table->longText('city_id')->nullable();
+            $table->text('skills')->nullable();
+            $table->text('benefits')->nullable();
+            $table->text('special_requirements')->nullable();
+            $table->integer('views')->default(0);
             $table->string('status',50)->nullable();
             $table->longText('application_deadline')->nullable();
             $table->timestamps();

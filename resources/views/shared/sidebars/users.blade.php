@@ -18,7 +18,7 @@
                 <span class="icon"><i class="ri-user-5-line"></i></span>
                 <span class="menu-title">Update profile picture</span>
             </a>
-        </li> --}}
+        </li> --}}  
 
         <li class="nav-item {{Request::segment(2)  === "services" ? "active" : ""}}">
             <a href="{{route('user.service')}}" class="nav-link">

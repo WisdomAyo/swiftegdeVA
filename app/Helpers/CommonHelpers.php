@@ -8,6 +8,8 @@ use App\Models\ArtisanServices;
 use App\Models\CustomerRating;
 use App\Models\ServiceRating;
 use App\Models\User;
+use HTMLPurifier;
+use HTMLPurifier_Config;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -304,15 +306,13 @@ class CommonHelpers
             'phone',
             'date_of_birth',
             'street_address',
-            'city',
-            'state',
+            'city_id',
+            'state_id',
             'profile_image',
             'Location_address',
             'delivery_address',
             'role',
             'business_category',
-            'facebook',
-            'instagram',
             'work_experience',
             'website_address',
             'service_description',
@@ -327,6 +327,9 @@ class CommonHelpers
             'gbp_rate',
             'eur_rate',
             'ngn_rate',
+            'social_media',
+            'video_url',
+            'resume'
         ];
 
         $completedFields = 0;
@@ -342,5 +345,7 @@ class CommonHelpers
 
         return $completionPercentage;
     }
+
+   
 
 }

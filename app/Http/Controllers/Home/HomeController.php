@@ -23,8 +23,6 @@ use App\Models\MySkill;
 use App\Models\Project;
 use App\Models\ServiceRating;
 use App\Models\State;
-use App\Models\StateAreas;
-use App\Models\States;
 use App\Models\User;
 use App\Service\HomeService;
 use App\Traits\Executable;
@@ -46,6 +44,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Stevebauman\Location\Facades\Location;
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
@@ -67,10 +66,12 @@ class HomeController extends Controller
     /**
      * @return Application|Factory|View
      */
-    public function getIndex()
+    public function getIndex(Request $request)
     {
 
-
+       
+        
+        // Check if user is an influencer
         $ip = $_SERVER['REMOTE_ADDR'];
         $position = Location::get($ip);
         if (!$position) {
@@ -84,12 +85,45 @@ class HomeController extends Controller
         /** END OF SEO */
 
         $artisan_services = ArtisanServices::query()->where('status', 1)->get();
+        $jobs = EmployerJobs::query()
+        ->where('status', 0)
+        ->with('employer')
+        ->latest()
+        ->paginate(10);
+
+        $users = User::with('mySkills') // Fetch users and their related skills
+        ->where('is_admin', 0) // Filter non-admin users
+        ->whereNotNull('identity') // Ensure users have an identity
+        ->limit(30)
+        ->get();
+
+        $artisans = User::with(['state', 'country', 'businessCategory'])
+        ->where('is_admin', 0)
+        ->whereNotNull('identity')
+        ->where('is_influencer', 0)
+        ->limit(30)
+        ->get();
+
+        $influencer = User::query()
+        ->where('is_admin', 0) // Ensure not admin
+        ->whereNotNull('identity') // Ensure identity exists
+        ->where('is_influencer', 1) // Only influencers
+        ->limit(30)
+        ->get();
+
+        $verified = User::query()
+        ->where('is_admin', 0) // Ensure not admin
+        ->whereNotNull('identity') // Ensure identity exists
+        ->where('is_feature', 1) // Only influencers
+        ->get();
+
         foreach ($artisan_services as $row) {
             $row["profile_image"] = User::query()->where('id', $row->user_id)->value('profile_image');
             $this->homeService->getServicePricesByLocation($countryCode, $row);
         }
-
-        $state_area = States::all();
+        $skills = MySkill::all();
+        $country = Country::all();
+        $state_area = State::all();
         $category = BusinessCategory::all();
         $feature_category = BusinessCategory::query()->limit(6)->get();
        $index_cat = BusinessCategory::where('parent_id', 0)
@@ -110,11 +144,18 @@ class HomeController extends Controller
         }
 
         $listed = [
+           
+            'artisans' => $artisans,
             'artisan_services' => $artisan_services,
             'feature_category' => $feature_category,
+            'country' => $country,
             'state_area' => $state_area,
             'category' => $category,
-            'index_cat' => $index_cat
+            'index_cat' => $index_cat,
+            'jobs' =>$jobs,
+            'influencer'=> $influencer,
+            'skills' => $skills,
+            'verified' => $verified
         ];
 
         if (App::environment('production')) {
@@ -145,13 +186,124 @@ class HomeController extends Controller
         $seo = CommonHelpers::seoTemplate("All Freelancers");
         /** END OF SEO */
 
-        $freelancers = User::orderBy('id', 'DESC')->where('role', 'Artisan')->where('is_admin', 0)->where('status', 1)->with('cityName','stateName')->paginate(18);
-        $listed = ['freelancers' => $freelancers];
+
+
+
+
+        $freelancers = User::orderBy('id', 'DESC')->where('role', 'Artisan')->where('is_admin', 0)->where('status', 1)->with( 'country','city','state')->paginate(30);
+        $influencer = User::orderBy('id', 'DESC')->where('role', 'Artisan')->where('is_admin', 0)->where('is_influencer', 1)->where('status', 1)->with( 'country','city','state')->paginate(30);
+
+        //dd($freelancers);
+        foreach( $freelancers as $freelancer){
+            $freelancer->service_description = $freelancer->service_description
+            ? \Illuminate\Support\Str::words($freelancer->service_description, 10, '...')
+            : 'No description';
+        }
+
+        $listed = ['freelancers' => $freelancers,
+                    'influencer' => $influencer
+                ];
 
         if (App::environment('production')) {
             $listed = array_merge($listed, $seo);
         }
         return view('home.freelancers', $listed);
+    }
+
+
+    public function getUserDetails(Request $request)
+    {
+
+        if ($request->status) {
+            $request->session()->put('status', $request->status);
+        }
+        $id = $request->segment(2);
+        // if (is_null($id)) {
+        //     return back()->with('error', 'User identity not found');
+        // }
+        $influencer = User::where('identity', $id)->where('is_influencer', 1)->get();
+        $verified =  User::where('identity', $id)->where('is_feature', 1)->get();
+        $user = User::where('identity', $id)->with('city','country')->first();
+            // Check if user is an influencer
+    
+          $galleryImages = ArtisanGallery::where('user_id', $user->id)->get();
+       
+
+
+
+        //dd(json_decode($user));
+       // $country = Country::get('name');
+       
+        $awards = AwardsAndCertificates::where('user_id', $user->id)->get();
+        $services = ArtisanServices::where('user_id', $user->id)->get();
+        $education = Education::where('user_id', $user->id)
+            ->where(function ($query) {
+                $query->whereNotNull('title')
+                    ->orWhereNotNull('desc')
+                    ->orWhereNotNull('purpose')
+                    ->orWhereNotNull('year');
+            })
+            ->get();
+        $project = Project::where('user_id', $user->id)
+            ->where(function ($query) {
+                $query->whereNotNull('title')
+                    ->orWhereNotNull('description')
+                    ->orWhereNotNull('url');
+            })
+            ->get();
+
+        $experience = Experience::where('user_id', $user->id)->get();
+        $gallery = ArtisanGallery::where('user_id', $user->id)->get();
+        $status = Session::get('status');
+        $reviews = ServiceRating::query()->where('type', "freelancer")->where('user_id', $user->id)->get();
+        $skills = MySkill::query()->where('user_id', $user->id)->get();
+
+       // $exchangeRate = 1.2; // Example exchange rate
+        $convertedMinAmount = $user->min_amount ? $user->min_amount : null;
+        $convertedMaxAmount = $user->max_amount ? $user->max_amount : null;
+        /** SEO */
+        $seo = CommonHelpers::seoTemplate("Artisan (" . $user->full_name . ")");
+        /** END OF SEO */
+
+        $listed = [
+            'user' => $user,
+            'awards' => $awards,
+            'education' => $education,
+            'experience' => $experience,
+            'project' => $project,
+            'reviews' => $reviews,
+            'gallery' => $gallery,
+            'status' => $status,
+            'services' => $services,
+            'skills' => $skills,
+            'influencer' => $influencer,
+            'verified' => $verified,
+         //   'country' => $country,
+            'convertedMinAmount' => $convertedMinAmount,
+            'convertedMaxAmount' => $convertedMaxAmount,
+            'galleryImages' => $galleryImages,
+        ];
+        if (App::environment('production')) {
+            $listed = array_merge($listed, $seo);
+        }
+
+        return view('home.candidates_details', $listed);
+    }
+
+
+    public function loadMoreFreelancers (Request $request){
+            $offset =$request->input('offset', 0);
+            $limit = 12;
+
+            $freelancers = User::orderBy('id','DESC')->where('role','Artisan')->where('is_admin', 0)->where('status', 1)->with('city', 'state')->offset($offset)->limit($limit)->get();
+
+          foreach( $freelancers as $freelancer){
+            $freelancer->service_description = $freelancer->service_description
+            ? \illuminate\Support\Str::words($freelancer->service, 10, '..')
+            : ' No Description';
+        }
+
+        return response()->json($freelancers);
     }
 
     /**
@@ -288,7 +440,7 @@ class HomeController extends Controller
         $seo = CommonHelpers::seoTemplate("Search -" . $request->keyword);
         /** END OF SEO */
 
-        $state_area = States::all();
+        $state_area = State::all();
         $category = BusinessCategory::all();
 
         if (!empty($request->keyword) && (!empty($request->job_category))) {
@@ -350,36 +502,36 @@ class HomeController extends Controller
     //     }
     //     return view('home.services_details', $listed);
     // }
-    
-    
-    
+
+
+
     public function ServicesByURL(Request $request)
     {
         $ip = $_SERVER['REMOTE_ADDR'];
         $position = Location::get($ip);
         $countryCode = $position ? $position->countryCode : "NG";
-    
+
         $url = $request->segment(2);
-    
+
         // Get the single service by URL
         $service = ArtisanServices::query()->where('url', $url)->first();
-    
+
         // If the service is not found, you may want to handle this case
         if (!$service) {
             return redirect()->back()->with('error', 'Service not found');
         }
-    
+
         // Get reviews related to the service
         $reviews = ServiceRating::query()->where('type', "service")->where('user_id', $service->user_id)->get();
-    
+
         // Get the profile of the user associated with the service
         $profile = User::query()->where('id', $service->user_id)->first();
-    
+
         //dd($service->city);
         // Add location and service prices by location
         $service->location = City::query()->where('state_id', $service->city)->value('name');
         $this->homeService->getServicePricesByLocation($countryCode, $service);
-    
+
         /** SEO */
         $seo = [];
         /** END OF SEO */
@@ -388,7 +540,7 @@ class HomeController extends Controller
         if (App::environment('production')) {
             $data = array_merge($data, $seo);
         }
-    
+
         return view('home.services_details', $data);
     }
 
@@ -397,65 +549,7 @@ class HomeController extends Controller
      * @param Request $request
      * @return Application|Factory|View
      */
-    public function getUserDetails(Request $request)
-    {
 
-        if ($request->status) {
-            $request->session()->put('status', $request->status);
-        }
-        $id = $request->segment(2);
-        // if (is_null($id)) {
-        //     return back()->with('error', 'User identity not found');
-        // }
-        $user = User::where('identity', $id)->with('cityName')->first();
-        //dd(json_decode($user));
-        $awards = AwardsAndCertificates::where('user_id', $user->id)->get();
-        $services = ArtisanServices::where('user_id', $user->id)->get();
-        $education = Education::where('user_id', $user->id)
-            ->where(function ($query) {
-                $query->whereNotNull('title')
-                    ->orWhereNotNull('desc')
-                    ->orWhereNotNull('purpose')
-                    ->orWhereNotNull('year');
-            })
-            ->get();
-        $project = Project::where('user_id', $user->id)
-            ->where(function ($query) {
-                $query->whereNotNull('title')
-                    ->orWhereNotNull('description')
-                    ->orWhereNotNull('url');
-            })
-            ->get();
-
-        $experience = Experience::where('user_id', $user->id)->get();
-        $gallery = ArtisanGallery::where('user_id', $user->id)->get();
-        $status = Session::get('status');
-        $reviews = ServiceRating::query()->where('type', "freelancer")->where('user_id', $user->id)->get();
-        $skills = MySkill::query()->where('user_id', $user->id)->get();
-
-
-        /** SEO */
-        $seo = CommonHelpers::seoTemplate("Artisan (" . $user->full_name . ")");
-        /** END OF SEO */
-
-        $listed = [
-            'user' => $user,
-            'awards' => $awards,
-            'education' => $education,
-            'experience' => $experience,
-            'project' => $project,
-            'reviews' => $reviews,
-            'gallery' => $gallery,
-            'status' => $status,
-            'services' => $services,
-            'skills' => $skills
-        ];
-        if (App::environment('production')) {
-            $listed = array_merge($listed, $seo);
-        }
-
-        return view('home.candidates_details', $listed);
-    }
 
 
     /**
@@ -484,14 +578,16 @@ class HomeController extends Controller
     {
 
 
+
+
         /** SEO */
         $seo = CommonHelpers::seoTemplate("Employer form");
         /** END OF SEO */
-
-        $states = States::all();
+        $country = Country::all();
+        $states = State::all();
         $category = BusinessCategory::all();
 
-        $listed = ['states' => $states, 'category' => $category];
+        $listed = ['country' => $country,'states' => $states, 'category' => $category];
         if (App::environment('production')) {
             $listed = array_merge($listed, $seo);
         }
@@ -505,8 +601,11 @@ class HomeController extends Controller
      */
     public function saveEmployerForm(Request $request): RedirectResponse
     {
+
         return $this->createEmployerAccount($request);
     }
+
+
 
 
     /**
@@ -522,7 +621,7 @@ class HomeController extends Controller
 
         $url = $request->segment(2);
         $result = EmployerJobs::where('url', $url)->where('status', 1)->get();
-        $states = States::all();
+        $states = State::all();
 
         $listed = ['result' => $result, 'states' => $states];
         if (App::environment('production')) {
@@ -535,14 +634,22 @@ class HomeController extends Controller
     /**
      * @return Application|Factory|View
      */
-    public function getJobApplicationForm()
+    public function getJobApplicationForm(Request $request)
     {
         /** SEO */
         $seo = CommonHelpers::seoTemplate("Job form");
         /** END OF SEO */
+        $url = $request->segment(2);
+        $job =  EmployerJobs::where('url', $url)->where('status', 0)->first();
 
-        $states = States::all();
-        $listed = ['states' => $states];
+        // if (!$job) {
+        //     return redirect()->route('index.home')->with('error', 'Job not found.');
+        // }
+
+        $states = State::all();
+        $listed = ['states' => $states,
+                     'job' => $job
+];
         if (App::environment('production')) {
             $listed = array_merge($listed, $seo);
         }
@@ -551,59 +658,229 @@ class HomeController extends Controller
     }
 
 
+
+
+    public function jobs(Request $request)
+    {
+        /** SEO */
+        $seo = CommonHelpers::seoTemplate("Find Jobs");
+
+        // Start building the query for filtering jobs
+        $query = EmployerJobs::query()
+            ->where('status', 0) // Only active jobs
+            ->with('employer'); // Include employer details
+
+        // Apply filters
+        if ($request->filled('keyword')) {
+            $query->where('job_title', 'LIKE', '%' . $request->keyword . '%')
+                  ->orWhere('job_description', 'LIKE', '%' . $request->keyword . '%');
+        }
+
+        if ($request->filled('location')) {
+            $query->where('state', $request->location);
+        }
+
+        if ($request->filled('business_category_name')) {
+            $query->where('business_category_name', $request->business_category_name);
+        }
+
+        if ($request->filled('hire_type')) {
+            $query->where('hire_type', $request->hire_type);
+        }
+
+        // Fetch filtered jobs
+        $jobs = $query->latest()->paginate(10);
+
+        // Get unique filter options
+        $locations = EmployerJobs::where('status', 0)->distinct()->pluck('country_id');
+        $categories = EmployerJobs::where('status', 0)->distinct()->pluck('business_category_name');
+
+        $listed = [
+            'jobs' => $jobs,
+            'locations' => $locations,
+            'categories' => $categories,
+        ];
+
+        if (App::environment('production')) {
+            $listed = array_merge($listed, $seo);
+        }
+
+        return view('home.jobs', $listed);
+    }
+
+
+    public function filterJobs(Request $request)
+{
+    $query = EmployerJobs::query()->where('status', 0); // Only active jobs
+
+    // Apply filters
+    if ($request->filled('keyword')) {
+        $query->where('job_title', 'LIKE', '%' . $request->keyword . '%')
+              ->orWhere('job_description', 'LIKE', '%' . $request->keyword . '%');
+    }
+    if ($request->filled('location')) {
+        $query->where('state', $request->location);
+    }
+    if ($request->filled('business_category_name')) {
+        $query->where('business_category_name', $request->business_category_name);
+    }
+    if ($request->filled('hire_type')) {
+        $query->where('hire_type', $request->hire_type);
+    }
+
+    // Fetch filtered jobs
+    $jobs = $query->get();
+
+    // Render the jobs as HTML
+    $html = view('home.util.job-list', compact('jobs'))->render();
+
+    return view (['html' => $html]);
+}
+
+
+
+public function showJobDetails($url)
+{
+    /** SEO */
+    $seo = CommonHelpers::seoTemplate("Find Jobs");
+
+    $job = EmployerJobs::where('url', $url)->with('employer', 'category')->first();
+    $sessionKey = 'viewed_jobs';
+    $viewedJobs = session()->get($sessionKey, []);
+    $job->applicants->contains('id', Auth::id());
+
+    if (!in_array($job->id, $viewedJobs)) {
+        // Increment the views count and add the job ID to the session
+        $job->increment('views');
+        $viewedJobs[] = $job->id;
+
+        // Store the updated viewed jobs in the session
+        session()->put($sessionKey, $viewedJobs);
+    }
+
+    if (!$job) {
+        return redirect()->route('home')->with('error', 'Job not found.');
+    }
+
+    // Fetch related jobs or other dynamic content if needed
+    $relatedJobs = EmployerJobs::where('business_category_id', $job->business_category_id)
+        ->where('id', '!=', $job->id)
+        ->take(5)
+        ->first();
+
+        $hasApplied = Auth::check() && JobApplications::where('job_id', $job->id)
+        ->where('user_id', Auth::id())
+        ->exists();
+
+    return view('home.job_detail', compact('job', 'relatedJobs', 'hasApplied'));
+}
+
+
+
+
+
     /**
      * @param Request $request
      * @return RedirectResponse
      */
     public function saveJobApplication(Request $request): RedirectResponse
     {
-        $job_id = EmployerJobs::where('url', $request->job_id)->value('id');
-        $employer_id = EmployerJobs::where('url', $request->job_id)->value('user_id');
-        $post = new JobApplications();
-        $post->job_id = $job_id ?? null;
-        $post->full_name = Auth::user()->full_name ?? $request->fullName;
-        $post->location_address = $request->address . "," . $request->city . "," . $request->State;
-        $post->email = Auth::user()->email ?? $request->emailAddress;
-        $post->phone = Auth::user()->phone ?? $request->phoneNumber;
-        $post->dob = $request->dob;
-        $post->skills = $request->skills;
-        $post->skillLevel = $request->skillLevel;
-        $post->availability = Auth::user()->availability ?? $request->availability;
-        $post->certification = $request->certification;
-        $post->employer_id = $employer_id;
 
-        if ($request->CV) {
-            // Create directory if it does not exist
-            if (!is_dir("JobRequest/CV/")) {
-                $path = "JobRequest/CV/";
-                File::makeDirectory(public_path() . '/' . $path, 0777, true);
-            }
-
-
-            $images = $request->CV;
-            $imageName = "SwiftedgeVA-job-" . time() . "." . $images->getClientOriginalExtension();
-
-            /** VALIDATING EXTENSIONS  */
-            $allowedfileExtension = ['docx', 'pdf', 'doc', 'odt', 'xls', 'xlsx', 'ppt', 'pptx'];
-            $extension = $images->getClientOriginalExtension();
-
-            $check_more = in_array($extension, $allowedfileExtension);
-
-            if ($check_more) {
-                $directory_original = public_path("JobRequest/CV/");
-                $images->move($directory_original, $imageName);
-
-                $post->cv = $imageName;
-                $post->save();
-                return back()->withInput()->with('response', 'Success!! Your application has been submitted');
-            } else {
-                return back()->withInput()->with('response', 'image type not supported');
-            }
-        } else {
-            $post->cv = null;
-            $post->save();
-            return back()->withInput()->with('response', 'Success!! Your application has been submitted');
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'You must be logged in to apply for jobs.');
         }
+
+        // Validate the input
+        $request->validate([
+            'job_id' => 'required|exists:employer_jobs,id',
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'location_address' => 'required|string',
+            'skills' => 'required|array',
+            'skills.*' => 'required|string',
+            'skillLevel' => 'required|string',
+            'availability' => 'required|string',
+            'date_of_birth' => 'required|date',
+            'certification' => 'required|string',
+            'phone' => 'required|string|max:20',
+            'cv' => 'nullable|mimes:pdf,doc,docx|max:10240', // Max 10MB
+        ]);
+
+        // Check if the user has already applied for the job
+        $jobId = $request->job_id;
+        $existingApplication = JobApplications::where('job_id', $jobId)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if ($existingApplication) {
+            return redirect()->back()->with('error', 'You have already applied for this job.');
+        }
+
+                // Fetch job and employer information
+            $job = EmployerJobs::find($request->job_id);
+            if (!$job) {
+                return redirect()->back()->with('error', 'Job not found.');
+            }
+
+            $employerId = $job->user_id;
+
+            $application = new JobApplications();
+            $application->user_id = Auth::id();
+            $application->job_id = $job->id;
+        $application->full_name = Auth::user()->full_name ?? $request->fullName;
+        $application->location_address = $request->address . "," . $request->city . "," . $request->State . "," . $request->country;
+        $application->email = Auth::user()->email ?? $request->emailAddress;
+        $application->phone = Auth::user()->phone ?? $request->phoneNumber;
+        $application->dob = $request->dob;
+        $application->skills = implode(',', $request->skills);
+        $application->skillLevel = $request->skillLevel;
+        $application->availability = Auth::user()->availability ?? $request->availability;
+        $application->certification = $request->certification;
+        $application->employer_id = $job->user_id;
+
+            // Save the application
+            $application->save();
+
+        if ($request->hasFile('cv')) {
+            $file = $request->file('cv');
+
+            // Allowed file extensions
+            $allowedExtensions = ['docx', 'pdf', 'doc', 'odt', 'xls', 'xlsx', 'ppt', 'pptx'];
+            if (!in_array($file->getClientOriginalExtension(), $allowedExtensions)) {
+                return back()->with('error', 'Unsupported file type. Please upload a valid document.');
+            }
+
+
+            // Sanitize and create the file name
+            $userFullName = preg_replace('/[^A-Za-z0-9_\-]/', '_', Auth::user()->full_name); // Replace special characters with underscores
+            $fileName = $userFullName . '_job_cv_' . time() . '.' . $file->getClientOriginalExtension();
+
+            // Define the directory inside the profile folder
+            $directory = 'profile/job_cvs/';
+            $fullDirectoryPath = public_path($directory);
+
+            // Ensure the directory exists
+            if (!File::exists($fullDirectoryPath)) {
+                File::makeDirectory($fullDirectoryPath, 0777, true);
+            }
+
+            // Move the file to the desired directory
+            $file->move($fullDirectoryPath, $fileName);
+
+            // Save the relative path to the database
+            $application->cv = $directory . $fileName;
+        }
+
+        if ($request->has('skills')) {
+            $application->skills = implode(', ', $request->skills);
+        }
+
+
+
+        return redirect()->route('job.detail', ['url' => $request->job_url])
+        ->with('success', 'Your application has been submitted successfully.');
+
+
     }
 
 
@@ -813,30 +1090,83 @@ class HomeController extends Controller
      * @param Request $request
      * @return Collection
      */
-    public function getStates(Request $request): Collection
+
+
+
+    // public function getStates(Request $request): Collection
+    // {
+    //     if ($request->segment(2)) {
+    //         return State::where('country_id', $request->segment(2))->get();
+    //     } else {
+    //         return State::all();
+    //     }
+    // }
+
+
+
+    // /**
+    //  * @param Request $request
+    //  * @return Collection
+    //  */
+    // public function getStatesAreas(Request $request): Collection
+    // {
+    //     if ($request->segment(2)) {
+    //         return City::where('state_id', $request->segment(2))->get();
+    //     } else {
+    //         return StateAreas::all();
+    //     }
+    // }
+
+
+
+    public function getStates($countryId)
     {
-        if ($request->segment(2)) {
-            return State::where('country_id', $request->segment(2))->get();
-        } else {
-            return State::all();
+        try {
+            $states = State::where('country_id', $countryId)->get(['id', 'name']);
+            return response()->json($states);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getCities($stateId)
+    {
+        try {
+            $cities = City::where('state_id', $stateId)->get(['id', 'name']);
+            return response()->json($cities);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
 
+    // public function getStates(Request $request): Collection
+    // {
+    //     if ($request->segment(2)) {
+    //         return State::where('country_id', $request->segment(2))->get();
 
-    /**
-     * @param Request $request
-     * @return Collection
-     */
-    public function getStatesAreas(Request $request): Collection
-    {
-        if ($request->segment(2)) {
-            return City::where('state_id', $request->segment(2))->get();
-        } else {
-            return StateAreas::all();
-        }
-    }
+    //     } else {
+    //         return State::all();
+    //     }
 
+    // }
+
+
+
+    // /**
+    //  * @param Request $request
+    //  * @return Collection
+    //  */
+    // public function getCities(Request $request): Collection
+    // {
+    //     if ($request->segment(2)) {
+    //         return City::where('state_id', $request->segment(2))->get();
+
+    //     } else {
+    //         return City::all();
+    //     }
+
+    // }
 
 
     /**

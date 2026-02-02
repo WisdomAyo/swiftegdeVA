@@ -108,10 +108,11 @@
            
             
           </div>
-          <a class="btn btn-primary animate-scale ms-n2 me-1 me-sm-2 mt-4" href="">
-            <i class="fi-plus fs-lg animate-target ms-n2 me-1 me-sm-2"></i>
-           Apply Now
-          </a>
+          <a href="{{ route('job.detail', $job->url) }}"
+            id="applyJobBtn"
+            class="btn btn-outline-dark">
+            Apply for the Job
+        </a>
         </div>
       </div>
     </div>

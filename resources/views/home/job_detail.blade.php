@@ -17,7 +17,7 @@
       <div class="d-flex align-items-center w-100 gap-3">
         <div class="ratio ratio-1x1 flex-shrink-0" style="max-width: 56px">
             @if($job->employer && $job->employer->company_logo)
-            <img src="{{ asset($job->employer->company_logo) }}" class="rounded d-none-dark" alt="Image">
+            <img src="{{ asset($job->employer->company_logo) }}" class="rounded d-none-dark" alt="Image" style="object-fit: contain">
             @endif
         </div>
         <h1 class="mb-0">{{ $job->job_title }}</h1>
@@ -114,16 +114,20 @@
 
 
             <h2 class="h3  ">Job  Summary</h2>
-            <p>This stunning convertible blends luxury with performance, featuring a sleek design, advanced technology, and a powerful engine. Enjoy open-air driving with premium comfort and the unmistakable elegance of Mercedes-Benz. Impeccably maintained and ready to provide an exhilarating driving experience. Don't miss out on this exceptional vehicle.</p>
-            <div class="collapse" id="moreDescription">
-              <p>This A205 Cabriolet comes equipped with top-of-the-line features, including a responsive infotainment system, advanced safety options, and a finely crafted interior that showcases Mercedes-Benz's commitment to quality. The soft-top roof operates seamlessly, allowing you to transition from a cozy cabin to an open-air cruiser in seconds. Whether you're navigating city streets or cruising along the coast, this cabriolet delivers a smooth, refined ride every time.</p>
-              <p>With low mileage and a full service history, this 2021 model remains in excellent condition, both mechanically and aesthetically. The exterior shines in pristine condition, and the interior has been meticulously cared for, ensuring a like-new experience. This Mercedes-Benz A205 Cabriolet is the perfect choice for those who desire a blend of sophistication, comfort, and thrilling performance in their next vehicle.</p>
-            </div>
-            <div class="nav">
-              <a class="nav-link position-relative px-0 collapsed" href="#moreDescription" data-bs-toggle="collapse" aria-expanded="false" aria-controls="moreDescription" aria-label="Show / hide services">
-                <span class="hover-effect-underline stretched-link" data-label-collapsed="Show more" data-label-expanded="Show less"></span>
-                <i class="collapse-toggle-icon fi-chevron-down fs-base mt-1 ms-1"></i>
-              </a>
+            <div id="descriptionContainer">
+                <p id="shortDescription">
+                    {{ \Illuminate\Support\Str::limit($job->job_description, 100) }} <!-- Initial truncated description -->
+                </p>
+                <a href="#moreDescription" data-bs-toggle="collapse" aria-expanded="false" aria-controls="moreDescription" id="showMoreLink">
+                    Show More
+                </a>
+            
+                <div class="collapse" id="moreDescription">
+                    <p>{{ substr($job->job_description, 100) }} <!-- Remaining content after the truncated part --></p>
+                    <a href="#moreDescription" data-bs-toggle="collapse" aria-expanded="true" aria-controls="moreDescription" id="showLessLink">
+                        Show Less
+                    </a>
+                </div>
             </div>
 
             <div class="d-flex fs-sm text-body-secondary border-top pt-4 mt-4 mt-md-5">
@@ -154,11 +158,11 @@
 
           <!-- Specifications -->
           <h2 class="h3 pt-5 mt-sm-2 my-lg-4">Required Specifications</h2>
-          <div class="row row-cols-1 row-cols-sm-2 gy-2">
+          <div class="row row-cols-1  gy-2">
             <div class="col">
               <ul class="list-unstyled text-body-secondary mt-n1 mb-0">
-                @foreach (explode(',', $job->special_requirements) as $requirements)
-                <li class="mt-1">
+                @foreach (explode('.' , $job->special_requirements) as $requirements)
+                <li class="mt-1">   
                   <span class="fw-medium text-dark-emphasis me-1">{{ trim($requirements) }}</span>
 
                 </li>
@@ -257,9 +261,10 @@
                         class="btn btn-outline-dark"
                         data-logged-in="{{ Auth::check() ? 'true' : 'false' }}"
                         data-login-url="{{ route('login') }}"
-                        data-applied="{{ $hasApplied ? 'true' : 'false' }}">
+                        data-applied="{{ $hasApplied ? 'true' : 'false' }}"
+                        data-is-owner="{{ $owner ? 'true' : 'false' }}">
                         Apply for the Job
-                     </a>
+                    </a>
                 </div>
               </div>
             </div>
@@ -288,5 +293,77 @@
 </main>
 
 
+<script>
+         document.addEventListener('DOMContentLoaded', function () {
+        var showMoreLink = document.getElementById('showMoreLink');
+        var moreDescription = document.getElementById('moreDescription');
 
+        moreDescription.addEventListener('shown.bs.collapse', function () {
+            showMoreLink.style.display = 'none';
+        });
+
+        moreDescription.addEventListener('hidden.bs.collapse', function () {
+            showMoreLink.style.display = 'block';
+        });
+    });
+
+
+
+    document.getElementById('applyJobBtn').addEventListener('click', function (event) {
+    event.preventDefault(); // Prevent default link behavior
+
+    const isLoggedIn = this.getAttribute('data-logged-in') === 'true'; // Check login status
+    const isApplied = this.getAttribute('data-applied') === 'true'; // Check if already applied
+    const isOwner = this.getAttribute('data-is-owner') === 'true'; // Check if user is the job owner
+    const applyUrl = this.getAttribute('href'); // Get the application URL
+    const loginUrl = this.getAttribute('data-login-url'); // Get the login URL
+
+    if (isOwner) {
+        Swal.fire({
+            title: 'Error',
+            text: "You can't apply for your own job.",
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    } else if (!isLoggedIn) {
+        Swal.fire({
+            title: 'Login Required',
+            text: "You need to log in to apply for this job.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Login',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = loginUrl;
+            }
+        });
+    } else if (isApplied) {
+        Swal.fire({
+            title: 'Already Applied',
+            text: "You've already applied for this job!",
+            icon: 'info',
+            confirmButtonText: 'OK'
+        });
+    } else {
+        Swal.fire({
+            title: 'Apply for Job',
+            text: "Are you sure you want to apply for this job?",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Apply!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = applyUrl;
+            }
+        });
+    }
+});
+
+</script>
 @endsection

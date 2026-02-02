@@ -7,9 +7,10 @@ use App\Utilities\GeneralConstants;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Symfony\Component\HttpFoundation\Exception\PostTooLargeException;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 
 class Handler extends ExceptionHandler
 {
@@ -42,23 +43,34 @@ class Handler extends ExceptionHandler
     public function register()
     {
 
-        $this->reportable(function (Throwable $e) {
-
-            if ($e instanceof TokenInvalidException) {
+        $this->renderable(function (TokenInvalidException $e, $request) {
+            if ($request->expectsJson()) {
                 return $this->errorResponse(
                     "An error occurred",
                     GeneralConstants::ERROR_RESP_MESSAGE,
                     GeneralConstants::ERROR_CODE,
-                    "An error occurred"
+                    "An error occurred",
+                    401
                 );
             }
 
-            return $this->errorResponse(
-                $e->getCode(),
-                $e->getMessage(),
-                self::$STATUS_CODE_ERROR,
-                $e->getMessage()
-            );
+            return null;
+        });
+
+        $this->renderable(function (Throwable $e, $request) {
+            if ($request->expectsJson()) {
+                $message = app()->environment('production') ? GeneralConstants::ERROR_RESP_MESSAGE : $e->getMessage();
+
+                return $this->errorResponse(
+                    $e->getCode(),
+                    $message,
+                    GeneralConstants::ERROR_CODE,
+                    $message,
+                    500
+                );
+            }
+
+            return null;
         });
     }
 
@@ -71,7 +83,7 @@ class Handler extends ExceptionHandler
             "resp_description" => $resp_message,
             "data" => $error,
             "errors" => null
-        ], self::$STATUS_CODE_NOT_ALLOWED);
+        ], $httpStatus ?? self::$STATUS_CODE_NOT_CREATED);
 
     }
 

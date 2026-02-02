@@ -93,6 +93,26 @@
 
     <div class="col-lg-9">
 
+        @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                html: '{!! implode("<br>", $errors->all()) !!}',
+            });
+        </script>
+        @endif
+
+        @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session('success') }}',
+            });
+        </script>
+        @endif
+
 
         <div class="d-flex align-items-center gap-2 gap-sm-3 pb-3 mb-2">
 
@@ -162,7 +182,7 @@
                     <span class="fs-sm fw-normal text-body-secondary">(2019)</span>
                   </h3>
                   <div class="h6 mb-0">{{$row->level_of_education}}</div>
-                  <p class="fs-sm pt-2 mt-1 mb-0">This SUV combines robust power with sophisticated design, offering advanced safety features and all-terrain capability.</p>
+                  <p class="fs-sm pt-2 mt-1 mb-0">{{ $row->job_description }}.</p>
                 </div>
                 <div class="card-footer bg-transparent border-0 pt-0 pb-4">
                   <div class="d-flex flex-wrap justify-content-between gap-3 border-top fs-sm text-nowrap pt-3 pt-md-4">

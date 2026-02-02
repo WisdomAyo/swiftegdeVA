@@ -14,7 +14,7 @@ class AddCountryAndCategoryIdToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'country')) {
+            if (!Schema::hasColumn('users', 'country_id')) {
                 $table->string('country_id')->nullable();
             }
             if (!Schema::hasColumn('users', 'category_id')) {
@@ -31,8 +31,8 @@ class AddCountryAndCategoryIdToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            if (Schema::hasColumn('users', 'country')) {
-                $table->dropColumn('country');
+            if (Schema::hasColumn('users', 'country_id')) {
+                $table->dropColumn('country_id');
             }
             if (Schema::hasColumn('users', 'category_id')) {
 

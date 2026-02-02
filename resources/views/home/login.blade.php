@@ -123,7 +123,7 @@
                 <div class="mposition-relative mb-4">
                   <label for="register-password" class="form-label">Password</label>
                   <div class="password-toggle">
-                    <input type="password" class="form-control form-control-lg @error('password') is-invalid @enderror" name="password" id="register-password" minlength="8" placeholder="Minimum 8 characters" value=""
+                    <input type="password" class="form-control form-control-lg @error('password') is-invalid @enderror" name="password" id="register-password" minlength="" placeholder="Minimum 8 characters" value=""
                     data-lpignore='1'
                     autocomplete="off"
                     data-hash='gl70hk4g8ss0'

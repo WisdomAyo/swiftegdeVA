@@ -166,20 +166,21 @@ class EmployerController extends Controller
 
 
     public function getProfile(){
-        
-        // $employer = Auth::user();
-        // $states = State::all();
-        // $country = Country::all(); 
-        // $city = City::all();
 
-        
+
+        // $states = State::all();
+        // $country = Country::all();
+      //  $cities = City::all();
+
+
+        // return view('employers.profile', compact('states','country','city'));
         return view('employers.profile');
     }
 
 
 //     public function editProfile()
 // {
-  
+
 
 //     if ($employer->role !== 'Employer') {
 //         abort(403, 'Unauthorized action.'); // Restrict access to employers only
@@ -266,10 +267,10 @@ class EmployerController extends Controller
 //         //     'Stored Path' => $logoPath,
 //         //     'Full Path' => storage_path('app/public/' . $logoPath),
 //         // ]);
-    
+
 //         // Save the file and get the path
-        
-    
+
+
 //         // Assign the file path to the model
 //         $employer->company_logo = $logoPath;
 //     }
@@ -313,11 +314,11 @@ public function updateProfile(Request $request)
     // Handle Other Profile Updates
     $request->validate([
         'full_name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email,' . $employer->id,
+        'email' => 'nullable|email|unique:users,email,' . $employer->id,
         'phone' => 'required|string|max:15',
         'street_address' => 'nullable|string|max:255',
-        'gender' => 'nullable|string|max:255',
-        'business_name' => 'nullable|string|max:255',
+        'gender' => 'required|string|max:255',
+        'business_name' => 'required|string|max:255',
         'date_of_birth' => 'nullable|date',
         'website_address' => 'nullable|url|max:255',
         'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',

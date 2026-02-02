@@ -110,7 +110,7 @@ return [
     'markdown' => [
         'theme' => 'default',
 
-        'paths' => [
+        'paths' => [ 
             resource_path('views/vendor/mail'),
         ],
     ],

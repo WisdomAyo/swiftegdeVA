@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Http\View\Composers\CurrencyComposer;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -29,5 +30,6 @@ class AppServiceProvider extends ServiceProvider
         //
         View::composer('*', CurrencyComposer::class);
         Schema::defaultStringLength(191);
+        Validator::extend('recaptcha', 'App\\Service\\Recaptcha@validate');
     }
 }

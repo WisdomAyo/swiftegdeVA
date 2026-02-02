@@ -139,7 +139,7 @@
                 </a>
                 <div class="position-absolute shadow" style="bottom: 9%; left: 7%; width: 160px; height: 86px" data-bs-theme="light">
                   <div class="position-absolute vstack text-white z-2" style="top: 19px; left: 75px">
-                    <div style="font-size: 10px; line-height: 10px">From</div>
+                    <div style="font-size: 10px; line-height: 10px">Signup for</div>
                     <div class="fs-4 fw-semibold">Free</div>
                   </div>
                   <svg class="position-relative z-1" style="margin: 4px 0 0 8px" xmlns="http://www.w3.org/2000/svg" width="142" height="69"><path class="text-primary" d="M8 0h31.189c.666 2.588 3.015 4.5 5.811 4.5s5.145-1.912 5.811-4.5H134a8 8 0 0 1 8 8v53a8 8 0 0 1-8 8H50.659c-.824-2.33-3.046-4-5.659-4s-4.835 1.67-5.659 4H8a8 8 0 0 1-8-8V8a8 8 0 0 1 8-8z" fill="currentColor"></path><path d="M45 65V4.5c2.796 0 5.145-1.912 5.811-4.5H134a8 8 0 0 1 8 8v53a8 8 0 0 1-8 8H50.659c-.824-2.33-3.046-4-5.659-4z" fill="url(#A)"></path><path d="M45 4v61" stroke="#1d2735" stroke-width="1.5" stroke-dasharray="4 2"></path><path d="M23.5 25l.008 8.919a1 1 0 0 0 .499.865l7.72 4.466-7.728-4.453a1 1 0 0 0-.998 0l-7.728 4.453 7.72-4.466a1 1 0 0 0 .499-.865L23.5 25z" stroke="currentColor" stroke-width="2" style="color: var(--fn-primary-text-emphasis)"></path><defs><linearGradient id="A" x1="46" y1="35.5" x2="66.5" y2="35.5" gradientUnits="userSpaceOnUse"><stop stop-color="rgba(0,0,0,.15)"></stop><stop class="text-primary" offset="1" stop-color="currentColor" stop-opacity="0"></stop></linearGradient></defs></svg>
@@ -463,11 +463,15 @@
                             </div>
                             <div class="modal-body">
                                 <div class="d-flex flex-wrap gap-2">
-                                    @foreach ($row->mySkills as $skill)
-                                        <span class="fs-xs badge text-bg-success">
-                                            {{ $skill->title }}
-                                        </span>
-                                    @endforeach
+                                    @if ($row->mySkills === null )
+                                        <span class="fs-xs text-muted">No skills added yet.</span>
+                                    @else
+                                        @foreach ($row->mySkills as $skill)
+                                            <span class="fs-xs badge text-bg-success">
+                                                {{ $skill->title }}
+                                            </span>
+                                        @endforeach
+                                    @endif
                                 </div>
                             </div>
                         </div>

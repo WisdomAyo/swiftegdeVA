@@ -209,7 +209,7 @@ class OnboardingController extends Controller
             if ($currentIndex === false || $currentIndex === count($this->steps) - 1) {
                 return 'dashboard'; // Redirect to the dashboard after completing all steps
             }
-        
+
             return $this->steps[$currentIndex + 1];
         }
 
@@ -226,15 +226,15 @@ class OnboardingController extends Controller
         {
             $user = Auth::user();
 
-        
+
             if (!$user) {
                 return redirect()->route('login')->with('error', 'Please log in to continue.');
             }
-            
-        
+
+
             $currentStep = $this->getCurrentStep($user);
             $previousStep = $this->getPreviousStep($currentStep);
-            
+
 
             if ($currentStep === 'dashboard') {
                 return redirect()->route('user.home')->with('success', 'Welcome to your dashboard!');
@@ -251,7 +251,7 @@ class OnboardingController extends Controller
                     'previousStep' => $previousStep,
                 ]);
             }
-        
+
             // dd($step);
             return view('onboarding.index', [
                 'step' => $currentStep,
@@ -274,7 +274,7 @@ class OnboardingController extends Controller
                  throw new \Exception("Invalid step: {$request->step}");
                   }
 
-                 
+
                 // Save data for the current step
                 switch ($request->step) {
                     case 'profile_picture':
@@ -284,14 +284,14 @@ class OnboardingController extends Controller
 
 
                         case 'location':
-                            
+
                             $request->validate([
                                 'country_id' => 'required|string',
                                 'state_id' => 'required|string',
                                 'city_id' => 'required|string',
                                 'street_address' => 'required|string',
                             ]);
-                           
+
                             $user->update($request->only(['country_id', 'state_id', 'city_id', 'street_address']));
                             break;
 
@@ -304,7 +304,7 @@ class OnboardingController extends Controller
                         $request->validate(['category_id' => 'required|integer']);
                         $user->update($request->only('category_id'));
                         break;
-        
+
                         case 'charge':
                             $request->validate([
                                 'ngn_rate' => 'required|numeric|min:0',
@@ -332,21 +332,21 @@ class OnboardingController extends Controller
                                 'social_media.*.platform' => 'required_if:is_influencer,1|string',
                                 'social_media.*.followers' => 'required_if:is_influencer,1|integer|min:0',
                                 'social_media.*.handle' => 'required_if:is_influencer,1|string',
-                                
+
                             ]);
                             $socialMedia = json_encode($request->social_media) ;
-                        
+
                             $user->update([
                                 'is_influencer' => (bool) $request->is_influencer,
                                 'social_media' => $socialMedia, // Store socials as JSON
 
-                                
+
                             ]);
-                       
+
                             return redirect()->route('user.home')->with('success', 'Welcome to your dashboard!');
                             break;
 
-                            
+
 
                     default:
                         throw new \Exception("Invalid step: {$request->step}");
@@ -358,8 +358,8 @@ class OnboardingController extends Controller
                 if ($request->has('previous')) {
                     return redirect()->route('onboarding', ['step' => $previousStep])->with('success', 'Step reverted.');
                 }
-        
-                
+
+
 
                 return redirect()->route('onboarding', ['step' => $nextStep])->with('success', 'Step completed!');
             } catch (\Illuminate\Validation\ValidationException $e) {
@@ -369,7 +369,7 @@ class OnboardingController extends Controller
                 return back()->with('validationErrors', $errorMessage);
             // } catch (\Symfony\Component\HttpFoundation\Exception\PostTooLargeException $e) {
             //     // File too large exception
-            
+
             //     return back()->with('validationErrors', 'Your Profile image  file is too large. Maximum file size allowed is 2MB.');
             } catch (\Exception $e) {
                 return back()->withErrors($e->getMessage());
@@ -422,21 +422,21 @@ class OnboardingController extends Controller
         {
             $file = $request->file('profile_image');
             $folder = 'profile/profile_picture/' . $user->id;
-        
+
             // Ensure directory exists
             if (!File::exists(public_path($folder))) {
                 File::makeDirectory(public_path($folder), 0755, true);
             }
-        
+
             // Delete existing file if present
-            if ($user->profile_picture && File::exists(public_path($user->profile_picture))) {
+            if ($user->profile_image && File::exists(public_path($user->profile_image))) {
                 File::delete(public_path($user->profile_image));
             }
-        
+
             // Save new file
             $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path($folder), $fileName);
-        
+
             // Update user's profile picture path
             $user->profile_image = "$folder/$fileName";
             $user->save();
@@ -459,7 +459,7 @@ class OnboardingController extends Controller
                 return response()->json(['error' => 'Unable to fetch states. Please try again.'], 500);
             }
         }
-        
+
         public function getCities($stateId)
         {
             try {

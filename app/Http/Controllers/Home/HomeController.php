@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -69,8 +70,8 @@ class HomeController extends Controller
     public function getIndex(Request $request)
     {
 
-       
-        
+
+
         // Check if user is an influencer
         $ip = $_SERVER['REMOTE_ADDR'];
         $position = Location::get($ip);
@@ -86,36 +87,36 @@ class HomeController extends Controller
 
         $artisan_services = ArtisanServices::query()->where('status', 1)->get();
         $jobs = EmployerJobs::query()
-        ->where('status', 0)
-        ->with('employer')
-        ->latest()
-        ->paginate(10);
+            ->where('status', 0)
+            ->with('employer')
+            ->latest()
+            ->paginate(10);
 
         $users = User::with('mySkills') // Fetch users and their related skills
-        ->where('is_admin', 0) // Filter non-admin users
-        ->whereNotNull('identity') // Ensure users have an identity
-        ->limit(30)
-        ->get();
+            ->where('is_admin', 0) // Filter non-admin users
+            ->whereNotNull('identity') // Ensure users have an identity
+            ->limit(30)
+            ->get();
 
         $artisans = User::with(['state', 'country', 'businessCategory'])
-        ->where('is_admin', 0)
-        ->whereNotNull('identity')
-        ->where('is_influencer', 0)
-        ->limit(30)
-        ->get();
+            ->where('is_admin', 0)
+            ->whereNotNull('identity')
+            ->where('is_influencer', 0)
+            ->limit(30)
+            ->get();
 
         $influencer = User::query()
-        ->where('is_admin', 0) // Ensure not admin
-        ->whereNotNull('identity') // Ensure identity exists
-        ->where('is_influencer', 1) // Only influencers
-        ->limit(30)
-        ->get();
+            ->where('is_admin', 0) // Ensure not admin
+            ->whereNotNull('identity') // Ensure identity exists
+            ->where('is_influencer', 1) // Only influencers
+            ->limit(30)
+            ->get();
 
         $verified = User::query()
-        ->where('is_admin', 0) // Ensure not admin
-        ->whereNotNull('identity') // Ensure identity exists
-        ->where('is_feature', 1) // Only influencers
-        ->get();
+            ->where('is_admin', 0) // Ensure not admin
+            ->whereNotNull('identity') // Ensure identity exists
+            ->where('is_feature', 1) // Only influencers
+            ->get();
 
         foreach ($artisan_services as $row) {
             $row["profile_image"] = User::query()->where('id', $row->user_id)->value('profile_image');
@@ -126,17 +127,17 @@ class HomeController extends Controller
         $state_area = State::all();
         $category = BusinessCategory::all();
         $feature_category = BusinessCategory::query()->limit(6)->get();
-       $index_cat = BusinessCategory::where('parent_id', 0)
+        $index_cat = BusinessCategory::where('parent_id', 0)
             ->withCount(['users_category' => function ($query) {
                 $query->whereNotNull('category_id');
             }])
             ->get();
-// $index_cat = BusinessCategory::where('parent_id', 0)
-//     ->withCount(['artisanServices' => function ($query) {
-//         $query->where('status', 1)
-//               ->whereNotNull('business_category_id');
-//     }])
-//     ->get();
+        // $index_cat = BusinessCategory::where('parent_id', 0)
+        //     ->withCount(['artisanServices' => function ($query) {
+        //         $query->where('status', 1)
+        //               ->whereNotNull('business_category_id');
+        //     }])
+        //     ->get();
 
 
         foreach ($index_cat as $row) {
@@ -144,7 +145,7 @@ class HomeController extends Controller
         }
 
         $listed = [
-           
+
             'artisans' => $artisans,
             'artisan_services' => $artisan_services,
             'feature_category' => $feature_category,
@@ -152,8 +153,8 @@ class HomeController extends Controller
             'state_area' => $state_area,
             'category' => $category,
             'index_cat' => $index_cat,
-            'jobs' =>$jobs,
-            'influencer'=> $influencer,
+            'jobs' => $jobs,
+            'influencer' => $influencer,
             'skills' => $skills,
             'verified' => $verified
         ];
@@ -190,19 +191,20 @@ class HomeController extends Controller
 
 
 
-        $freelancers = User::orderBy('id', 'DESC')->where('role', 'Artisan')->where('is_admin', 0)->where('status', 1)->with( 'country','city','state')->paginate(30);
-        $influencer = User::orderBy('id', 'DESC')->where('role', 'Artisan')->where('is_admin', 0)->where('is_influencer', 1)->where('status', 1)->with( 'country','city','state')->paginate(30);
+        $freelancers = User::orderBy('id', 'DESC')->where('role', 'Artisan')->where('is_admin', 0)->where('status', 1)->with('country', 'city', 'state')->paginate(30);
+        $influencer = User::orderBy('id', 'DESC')->where('role', 'Artisan')->where('is_admin', 0)->where('is_influencer', 1)->where('status', 1)->with('country', 'city', 'state')->paginate(30);
 
         //dd($freelancers);
-        foreach( $freelancers as $freelancer){
+        foreach ($freelancers as $freelancer) {
             $freelancer->service_description = $freelancer->service_description
-            ? \Illuminate\Support\Str::words($freelancer->service_description, 10, '...')
-            : 'No description';
+                ? \Illuminate\Support\Str::words($freelancer->service_description, 10, '...')
+                : 'No description';
         }
 
-        $listed = ['freelancers' => $freelancers,
-                    'influencer' => $influencer
-                ];
+        $listed = [
+            'freelancers' => $freelancers,
+            'influencer' => $influencer
+        ];
 
         if (App::environment('production')) {
             $listed = array_merge($listed, $seo);
@@ -218,22 +220,26 @@ class HomeController extends Controller
             $request->session()->put('status', $request->status);
         }
         $id = $request->segment(2);
-        // if (is_null($id)) {
-        //     return back()->with('error', 'User identity not found');
-        // }
+        if (is_null($id)) {
+            return back()->with('error', 'User identity not found');
+        }
         $influencer = User::where('identity', $id)->where('is_influencer', 1)->get();
         $verified =  User::where('identity', $id)->where('is_feature', 1)->get();
-        $user = User::where('identity', $id)->with('city','country')->first();
-            // Check if user is an influencer
-    
-          $galleryImages = ArtisanGallery::where('user_id', $user->id)->get();
-       
+        $user = User::where('identity', $id)->with('city', 'country')->first();
+        // Check if user is an influencer
+
+        if (!$user) {
+            return redirect('/')->with('error', 'User not found');
+        }
+
+        $galleryImages = ArtisanGallery::where('user_id', $user->id)->get();
+
 
 
 
         //dd(json_decode($user));
-       // $country = Country::get('name');
-       
+        // $country = Country::get('name');
+
         $awards = AwardsAndCertificates::where('user_id', $user->id)->get();
         $services = ArtisanServices::where('user_id', $user->id)->get();
         $education = Education::where('user_id', $user->id)
@@ -258,7 +264,7 @@ class HomeController extends Controller
         $reviews = ServiceRating::query()->where('type', "freelancer")->where('user_id', $user->id)->get();
         $skills = MySkill::query()->where('user_id', $user->id)->get();
 
-       // $exchangeRate = 1.2; // Example exchange rate
+        // $exchangeRate = 1.2; // Example exchange rate
         $convertedMinAmount = $user->min_amount ? $user->min_amount : null;
         $convertedMaxAmount = $user->max_amount ? $user->max_amount : null;
         /** SEO */
@@ -278,7 +284,7 @@ class HomeController extends Controller
             'skills' => $skills,
             'influencer' => $influencer,
             'verified' => $verified,
-         //   'country' => $country,
+            //   'country' => $country,
             'convertedMinAmount' => $convertedMinAmount,
             'convertedMaxAmount' => $convertedMaxAmount,
             'galleryImages' => $galleryImages,
@@ -291,16 +297,17 @@ class HomeController extends Controller
     }
 
 
-    public function loadMoreFreelancers (Request $request){
-            $offset =$request->input('offset', 0);
-            $limit = 12;
+    public function loadMoreFreelancers(Request $request)
+    {
+        $offset = $request->input('offset', 0);
+        $limit = 12;
 
-            $freelancers = User::orderBy('id','DESC')->where('role','Artisan')->where('is_admin', 0)->where('status', 1)->with('city', 'state')->offset($offset)->limit($limit)->get();
+        $freelancers = User::orderBy('id', 'DESC')->where('role', 'Artisan')->where('is_admin', 0)->where('status', 1)->with('city', 'state')->offset($offset)->limit($limit)->get();
 
-          foreach( $freelancers as $freelancer){
+        foreach ($freelancers as $freelancer) {
             $freelancer->service_description = $freelancer->service_description
-            ? \illuminate\Support\Str::words($freelancer->service, 10, '..')
-            : ' No Description';
+                ? \illuminate\Support\Str::words($freelancer->service, 10, '..')
+                : ' No Description';
         }
 
         return response()->json($freelancers);
@@ -535,7 +542,7 @@ class HomeController extends Controller
         /** SEO */
         $seo = [];
         /** END OF SEO */
-    //dd($service);
+        //dd($service);
         $data = ['service' => $service, 'reviews' => $reviews, 'profile' => $profile];
         if (App::environment('production')) {
             $data = array_merge($data, $seo);
@@ -587,7 +594,7 @@ class HomeController extends Controller
         $states = State::all();
         $category = BusinessCategory::all();
 
-        $listed = ['country' => $country,'states' => $states, 'category' => $category];
+        $listed = ['country' => $country, 'states' => $states, 'category' => $category];
         if (App::environment('production')) {
             $listed = array_merge($listed, $seo);
         }
@@ -647,9 +654,10 @@ class HomeController extends Controller
         // }
 
         $states = State::all();
-        $listed = ['states' => $states,
-                     'job' => $job
-];
+        $listed = [
+            'states' => $states,
+            'job' => $job
+        ];
         if (App::environment('production')) {
             $listed = array_merge($listed, $seo);
         }
@@ -673,7 +681,7 @@ class HomeController extends Controller
         // Apply filters
         if ($request->filled('keyword')) {
             $query->where('job_title', 'LIKE', '%' . $request->keyword . '%')
-                  ->orWhere('job_description', 'LIKE', '%' . $request->keyword . '%');
+                ->orWhere('job_description', 'LIKE', '%' . $request->keyword . '%');
         }
 
         if ($request->filled('location')) {
@@ -688,14 +696,18 @@ class HomeController extends Controller
             $query->where('hire_type', $request->hire_type);
         }
 
+
         // Fetch filtered jobs
-        $jobs = $query->latest()->paginate(10);
+        $jobs = $query->latest()->paginate(30);
 
         // Get unique filter options
         $locations = EmployerJobs::where('status', 0)->distinct()->pluck('country_id');
         $categories = EmployerJobs::where('status', 0)->distinct()->pluck('business_category_name');
 
+
+
         $listed = [
+
             'jobs' => $jobs,
             'locations' => $locations,
             'categories' => $categories,
@@ -710,70 +722,74 @@ class HomeController extends Controller
 
 
     public function filterJobs(Request $request)
-{
-    $query = EmployerJobs::query()->where('status', 0); // Only active jobs
+    {
+        $query = EmployerJobs::query()->where('status', 0); // Only active jobs
 
-    // Apply filters
-    if ($request->filled('keyword')) {
-        $query->where('job_title', 'LIKE', '%' . $request->keyword . '%')
-              ->orWhere('job_description', 'LIKE', '%' . $request->keyword . '%');
-    }
-    if ($request->filled('location')) {
-        $query->where('state', $request->location);
-    }
-    if ($request->filled('business_category_name')) {
-        $query->where('business_category_name', $request->business_category_name);
-    }
-    if ($request->filled('hire_type')) {
-        $query->where('hire_type', $request->hire_type);
-    }
+        // Apply filters
+        if ($request->filled('keyword')) {
+            $query->where('job_title', 'LIKE', '%' . $request->keyword . '%')
+                ->orWhere('job_description', 'LIKE', '%' . $request->keyword . '%');
+        }
+        if ($request->filled('location')) {
+            $query->where('state', $request->location);
+        }
+        if ($request->filled('business_category_name')) {
+            $query->where('business_category_name', $request->business_category_name);
+        }
+        if ($request->filled('hire_type')) {
+            $query->where('hire_type', $request->hire_type);
+        }
 
-    // Fetch filtered jobs
-    $jobs = $query->get();
+        // Fetch filtered jobs
+        $jobs = $query->get();
 
-    // Render the jobs as HTML
-    $html = view('home.util.job-list', compact('jobs'))->render();
+        // Render the jobs as HTML
+        $html = view('home.util.job-list', compact('jobs'))->render();
 
-    return view (['html' => $html]);
-}
-
-
-
-public function showJobDetails($url)
-{
-    /** SEO */
-    $seo = CommonHelpers::seoTemplate("Find Jobs");
-
-    $job = EmployerJobs::where('url', $url)->with('employer', 'category')->first();
-    $sessionKey = 'viewed_jobs';
-    $viewedJobs = session()->get($sessionKey, []);
-    $job->applicants->contains('id', Auth::id());
-
-    if (!in_array($job->id, $viewedJobs)) {
-        // Increment the views count and add the job ID to the session
-        $job->increment('views');
-        $viewedJobs[] = $job->id;
-
-        // Store the updated viewed jobs in the session
-        session()->put($sessionKey, $viewedJobs);
+        return view(['html' => $html]);
     }
 
-    if (!$job) {
-        return redirect()->route('home')->with('error', 'Job not found.');
-    }
 
-    // Fetch related jobs or other dynamic content if needed
-    $relatedJobs = EmployerJobs::where('business_category_id', $job->business_category_id)
-        ->where('id', '!=', $job->id)
-        ->take(5)
-        ->first();
+
+    public function showJobDetails($url)
+    {
+        /** SEO */
+        $seo = CommonHelpers::seoTemplate("Find Jobs");
+
+        $job = EmployerJobs::where('url', $url)->with('employer', 'category')->first();
+        $sessionKey = 'viewed_jobs';
+        $viewedJobs = session()->get($sessionKey, []);
+        $job->applicants->contains('id', Auth::id());
+
+        if (!in_array($job->id, $viewedJobs)) {
+            // Increment the views count and add the job ID to the session
+            $job->increment('views');
+            $viewedJobs[] = $job->id;
+
+            // Store the updated viewed jobs in the session
+            session()->put($sessionKey, $viewedJobs);
+        }
+
+        if (!$job) {
+            return redirect()->route('home')->with('error', 'Job not found.');
+        }
+
+        // Fetch related jobs or other dynamic content if needed
+        $relatedJobs = EmployerJobs::where('business_category_id', $job->business_category_id)
+            ->where('id', '!=', $job->id)
+            ->take(5)
+            ->first();
 
         $hasApplied = Auth::check() && JobApplications::where('job_id', $job->id)
-        ->where('user_id', Auth::id())
-        ->exists();
+            ->where('user_id', Auth::id())
+            ->exists();
 
-    return view('home.job_detail', compact('job', 'relatedJobs', 'hasApplied'));
-}
+        $owner = Auth::check() && EmployerJobs::where('id', $job->id)
+            ->where('user_id', Auth::id())
+            ->exists();
+
+        return view('home.job_detail', compact('job', 'relatedJobs', 'hasApplied', 'owner'));
+    }
 
 
 
@@ -816,17 +832,17 @@ public function showJobDetails($url)
             return redirect()->back()->with('error', 'You have already applied for this job.');
         }
 
-                // Fetch job and employer information
-            $job = EmployerJobs::find($request->job_id);
-            if (!$job) {
-                return redirect()->back()->with('error', 'Job not found.');
-            }
+        // Fetch job and employer information
+        $job = EmployerJobs::find($request->job_id);
+        if (!$job) {
+            return redirect()->back()->with('error', 'Job not found.');
+        }
 
-            $employerId = $job->user_id;
+        $employerId = $job->user_id;
 
-            $application = new JobApplications();
-            $application->user_id = Auth::id();
-            $application->job_id = $job->id;
+        $application = new JobApplications();
+        $application->user_id = Auth::id();
+        $application->job_id = $job->id;
         $application->full_name = Auth::user()->full_name ?? $request->fullName;
         $application->location_address = $request->address . "," . $request->city . "," . $request->State . "," . $request->country;
         $application->email = Auth::user()->email ?? $request->emailAddress;
@@ -838,8 +854,8 @@ public function showJobDetails($url)
         $application->certification = $request->certification;
         $application->employer_id = $job->user_id;
 
-            // Save the application
-            $application->save();
+        // Save the application
+        $application->save();
 
         if ($request->hasFile('cv')) {
             $file = $request->file('cv');
@@ -861,7 +877,7 @@ public function showJobDetails($url)
 
             // Ensure the directory exists
             if (!File::exists($fullDirectoryPath)) {
-                File::makeDirectory($fullDirectoryPath, 0777, true);
+                File::makeDirectory($fullDirectoryPath, 0755, true);
             }
 
             // Move the file to the desired directory
@@ -878,9 +894,7 @@ public function showJobDetails($url)
 
 
         return redirect()->route('job.detail', ['url' => $request->job_url])
-        ->with('success', 'Your application has been submitted successfully.');
-
-
+            ->with('success', 'Your application has been submitted successfully.');
     }
 
 
@@ -903,6 +917,44 @@ public function showJobDetails($url)
 
 
         return view('home.register', $listed);
+    }
+
+
+
+    public function submitForm(Request $request)
+    {
+        $recaptchaToken = $request->input('g-recaptcha-response'); //  This is crucial; get the token correctly.
+
+        if (empty($recaptchaToken)) {
+            // Handle the case where no reCAPTCHA response was submitted.
+            return back()->withErrors(['g-recaptcha' => 'reCAPTCHA verification failed.']); //Example error handling
+        }
+
+        $client = new Client();
+        try {
+            $response = $client->post('https://www.google.com/recaptcha/api/siteverify', [
+                'form_params' => [
+                    'secret' => 'YOUR_SECRET_KEY',
+                    'response' => $recaptchaToken,
+                    'remoteip' => $request->ip(), // Include the user's IP address
+                ],
+            ]);
+
+            $body = json_decode($response->getBody(), true);
+
+
+            if ($body['success']) {
+                // reCAPTCHA verification successful! Proceed with processing the form.
+                // ... your form processing logic here ...
+            } else {
+                // reCAPTCHA verification failed.
+                return back()->withErrors(['g-recaptcha' => 'reCAPTCHA verification failed.']); //Example error handling
+
+            }
+        } catch (\Exception $e) {
+            // Handle exceptions during the API call.  This might include network errors.
+            return back()->withErrors(['g-recaptcha' => 'reCAPTCHA verification failed.']); //Example error handling
+        }
     }
 
     /**
@@ -951,36 +1003,51 @@ public function showJobDetails($url)
         // SEO
         $seo = CommonHelpers::seoTemplate("Register As An Artisan");
 
-        // Validation rules
-        $rules = [
-            'fullname' => 'required|string|max:50',
-            'email' => 'required|string|email|max:255|unique:users',
-            'phone' => 'required|numeric|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ];
+        try {
+
+            // Validation rules
+            $rules = [
+                'fullname' => 'required|string|max:50',
+                'email' => 'required|string|email|max:255|unique:users',
+                'phone' => 'required|numeric|unique:users',
+                'password' => 'required|string|min:6|confirmed',
+            ];
+
+            if (config('services.recaptcha.key') && config('services.recaptcha.secret')) {
+                $rules['g-recaptcha-response'] = 'required|recaptcha';
+            }
 
 
-        $validator = Validator::make($request->all(), $rules);
+            $validator = Validator::make($request->all(), $rules);
 
-        if ($validator->fails()) {
-            return redirect()->route('index.register')
-                ->withErrors($validator)
-                ->withInput();
+            if ($validator->fails()) {
+                return redirect()->route('index.register')
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            // Create new user
+            $user = new User();
+            $user->role = "Artisan";
+            $user->full_name = $request->fullname;
+            $user->email = $request->email;
+            $user->password = Hash::make($request->password);
+            $user->phone = $request->phone;
+            //dd($user);
+            $user->save();
+
+            // Redirect to login with success message
+            return redirect()->route('login')
+                ->with('response', 'Your registration was successful, please login');
+        } catch (\Throwable $e) {
+            Log::error('Signup failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()->route('index.register')->with('error', 'Unable to create account. Please try again.');
         }
-
-        // Create new user
-        $user = new User();
-        $user->role = "Artisan";
-        $user->full_name = $request->fullname;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->phone = $request->phone;
-        //dd($user);
-        $user->save();
-
-        // Redirect to login with success message
-        return redirect()->route('login')
-            ->with('response', 'Your registration was successful, please login');
     }
 
     /**

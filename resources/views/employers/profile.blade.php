@@ -126,7 +126,7 @@
             });
         </script>
         @endif
-        
+
         @if (session('success'))
         <script>
             Swal.fire({
@@ -164,28 +164,29 @@
                         <i class="fa-map-pin fs-base me-2 " style="margin-top: .1875rem"></i>
                         <small class="h6 bold">
                             @if (Auth::user()->country_id)
-                                {{ Auth::user()->country->name }}
-                            @endif
+                            {{ Auth::user()->country->name }}
+                        @endif
 
-                            @if (Auth::user()->country_id && Auth::user()->state_id)
-                                ,
-                            @endif
+                        @if (Auth::user()->country_id && Auth::user()->state_id)
+                            ,
+                        @endif
 
-                            @if (Auth::user()->state_id)
-                                {{ Auth::user()->state->name }}
-                            @endif
+                        @if (Auth::user()->state_id)
+                            {{ Auth::user()->state_id }}
+                        @endif
 
-                            @if (Auth::user()->stateName && Auth::user()->cityName)
-                                ,
-                            @endif
+                        @if (Auth::user()->stateName && Auth::user()->cityName)
+                            ,
+                        @endif
 
-                            @if (Auth::user()->cityName)
-                                {{ Auth::user()->cityName->name }}
-                            @endif
+                        @if (Auth::user()->cityName)
+                            {{ Auth::user()->cityName->name }}
+                        @endif
+
                         </small>
                     </li>
 
-                   
+
                   </ul>
                   <div class="d-flex me-3"> <small class="h6 bold">Company:</small>
                     <i class="fa-map fs-base me-2 " style="margin-top: .1875rem"></i>
@@ -268,12 +269,15 @@
                 </div>
 
                 <div class="col">
-                  <label for="date-2" class="form-label">Date of Birth <span class="text-body-secondary fs-xs fw-normal">(F j, Y format)</span></label>
-                  <div class="position-relative mb-3" >
-                    <input type="date" class="form-control form-control-lg form-icon-end" id="date-2" data-datepicker="{&quot;dateFormat&quot;: &quot;F j, Y&quot;}" placeholder="Choose date" value="{{ Auth::user()->date_of_birth }}"
-                    name="date_of_birth">
-                    <i class="fi-calendar position-absolute top-50 end-0 translate-middle-y me-3"></i>
-                  </div>
+
+                    <label for="date-2" class="form-label">Date of Birth <span
+                            class="text-body-secondary fs-xs fw-normal">(M d, Y format)</span></label>
+                    <div class="position-relative mb-3">
+                        <i class="fi-calendar position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                        <input type="text" class="form-control form-icon-start bg-transparent"
+                            data-datepicker="{&quot;dateFormat&quot;: &quot;M j, Y&quot;}" placeholder="Date"
+                            name="date_of_birth" value="{{ Auth::user()->date_of_birth }}">
+                    </div>
                 </div>
 
                 <div class="col">
@@ -294,8 +298,8 @@
                 <div class="col">
                 <div class="position-relative mb-4">
                   <label for="address" class="form-label fs-base">Company"s Website link</label>
-                  <input type="text" class="form-control form-control-lg" value="{{ Auth::user()->website_address }}" name="website_address" placeholder="eg : https://website.com"> 
-                
+                  <input type="text" class="form-control form-control-lg" value="{{ Auth::user()->website_address }}" name="website_address" placeholder="eg : https://website.com">
+
                   @error('website_address')
                   <span class="invalid-feedback" role="alert">
                       <strong>{{ $message }}</strong>
@@ -322,42 +326,60 @@
 
 
 
-               <div class="row row-cols-1 row-cols-sm-2 g-4 mb-4">
-
-                <div class="position-relative mb-4">
-
+               <<div class="row row-cols-1 row-cols-sm-2 g-4 mb-4">
+                <div class="col position-relative mb-4">
                     <label class="form-label">Country *</label>
-                    <select class="form-select form-select-lg"  required name="country_id" id="country">
-                    <option value="">Select your Country</option>
-                    @foreach (\App\Models\Country::all() as $row)
-                    <option value="{{ $row->id }}">{{ ucfirst(strtolower($row->name)) }}</option>
-                    @endforeach
+                    <select class="form-select form-select-lg"
+                        data-select="{
+                &quot;classNames&quot;: {
+                  &quot;containerInner&quot;: [&quot;form-select&quot;, &quot;form-select-lg&quot;]
+                },
+                &quot;searchEnabled&quot;: true
+              }"
+                        aria-label="Country select" required name="country_id" id="country">
+                        <option value="">Select your Country</option>
+                        @foreach (\App\Models\Country::all() as $row)
+                            <option value="{{ $row->id }}" {{ old('country_id', Auth::user()->country_id) == $row->id ? 'selected' : '' }}>{{ ucfirst(strtolower($row->name)) }}
+                            </option>
+                        @endforeach
                     </select>
-                  </div>
 
-
-                  <div class="position-relative mb-4">
-                    <label for="state" class="form-label">State *</label>
-                    <select name="state_id" id="state" class="form-select form-select-lg"
-                    required>
-                        <option value="">Select State</option>
-                        {{-- @if(Auth::user()->state)
-                        <option value="{{ Auth::user()->state }}" selected>{{ Auth::user()->stateName->name }}</option>
-                    @endif --}}
-
-                    </select>
                 </div>
 
 
-                  <div class="position-relative mb-4">
-                    <label class="form-label">City *</label>
-                    <select class="form-select form-select-lg" required="" id="city" name="city_id" >
-                    <option value="">Select your City</option>
-                    {{-- @if(Auth::user()->city)
-                    <option value="{{ Auth::user()->city_id }}" selected>{{ Auth::user()->city_id }}</option>
-                @endif --}}
-                    </select>
-                  </div>
+                  <div class="col position-relative mb-4">
+                                <label for="state" class="form-label">State *</label>
+                                <select name="state_id" id="state" class="form-select form-select-lg" required >
+                                    <option value="">Select State</option>
+                                    @foreach (\App\Models\State::all() as $row)
+                                        <option value="{{ $row->id }}"
+                                            {{ old('state_id', Auth::user()->state_id) == $row->id ? 'selected' : '' }}>
+                                            {{ $row->name }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="col position-relative mb-4">
+                                <label class="form-label">City *</label>
+                                <select class="form-select form-select-lg" required="" id="city" name="city_id">
+                                    <option value="">Select your City</option>
+                                    @php
+                                        $user = Auth::user();
+                                        $cities = \App\Models\City::where('state_id', $user->state_id)->get();
+                                    @endphp
+                                    @foreach ($cities as $city)
+                                        <option value="{{ $city->id }}"
+                                            {{ old('city_id', Auth::user()->city_id) == $city->id ? 'selected' : '' }}>
+                                            {{ $city->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                            </div>
 
 
 
@@ -393,7 +415,7 @@
 
 
 
-      <div class="modal fade" id="addimage" data-bs-backdrop="static" tabindex="-1" role="dialog"> 
+      <div class="modal fade" id="addimage" data-bs-backdrop="static" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-body tab-content">
@@ -411,7 +433,7 @@
                     </div>
                   </div>
 
-                  
+
                     <button type="submit" class="btn btn-primary w-100">Update Profile Image </button>
                   </div>
                 </form>

@@ -88,116 +88,13 @@
 }
 
 
- /* Preloader container */
- #preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(112, 147, 163, 0.6); /* Semi-transparent white */
-    backdrop-filter: blur(10px); /* Blur effect */
-    z-index: 9999;
-    transition: opacity 0.5s ease, visibility 0.5s ease; /* Smooth fade-out */
-}
-
-/* Assistant animation */
-.assistant-animation {
-    text-align: center;
-    animation: fadeIn 1s ease-in-out;
-}
-
-/* Assistant avatar */
-.avatar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    animation: zoomInOut 2s ease-in-out infinite; /* Zoom in and out */
-}
-
-/* Keyframes for zoom in and zoom out */
-@keyframes zoomInOut {
-    0%, 100% {
-        transform: scale(1); /* Normal size */
-    }
-    50% {
-        transform: scale(1.2); /* Zoomed in */
-    }
-}
-
-/* Typing dots */
-.typing-dots {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-}
-
-.typing-dots span {
-    width: 10px;
-    height: 10px;
-    background-color: #ece3e3;
-    border-radius: 50%;
-    animation: blink 1.5s infinite;
-}
-
-.typing-dots span:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.typing-dots span:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-/* Loading text */
-.assistant-animation p {
-    margin-top: 10px;
-    font-family: 'Arial', sans-serif;
-    font-size: 18px;
-    color: #333;
-}
-
-/* Keyframes for animations */
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
-
-
-@keyframes blink {
-    0%, 100% {
-        opacity: 0.2;
-    }
-    50% {
-        opacity: 1;
-    }
-}
+ 
 </style>
 
   </head>
 
-  <body>
-    <div id="preloader" class="preloader">
-        <div class="assistant-animation">
-            <div class="avatar">
-                <img src="{{ asset('avata2.png') }}" alt="Assistant Avatar">
-            </div>
-            <div class="typing-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-         
-        </div>
-    </div>
+  <body  style="visibility: hidden">
+  
 
 
     <header class="navbar navbar-expand-lg navbar-sticky sticky-top z-fixed px-0" data-sticky-element="">

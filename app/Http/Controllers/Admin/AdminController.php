@@ -61,7 +61,6 @@ class AdminController extends Controller
             } else {
                 return redirect()->route('admin.login');
             }
-
         }
         return view('admin.login');
     }
@@ -93,7 +92,6 @@ class AdminController extends Controller
                 } else {
                     return back()->withInput()->with('error', "you are not allowed here!");
                 }
-
             }
             return back()->withInput()->with('error', "Email Or Password didn't match");
         }
@@ -119,9 +117,8 @@ class AdminController extends Controller
             } else {
                 $row["identity"] = User::where('id', $row->user_id)->value('identity');
             }
-
         }
-        return view('admin.dashboard', compact('messages', 'freelancer', 'service', 'request', 'requests','special_booking','freelancer_request'));
+        return view('admin.dashboard', compact('messages', 'freelancer', 'service', 'request', 'requests', 'special_booking', 'freelancer_request'));
     }
 
 
@@ -214,7 +211,6 @@ class AdminController extends Controller
         $title = "Employer Management";
         $jobs = EmployerJobs::orderBy('id', 'DESC')->simplePaginate(20);
         return view('admin/employer-jobs', compact('title', 'jobs'));
-
     }
 
     public function ApproveEmployerJobs(Request $request)
@@ -224,7 +220,6 @@ class AdminController extends Controller
         $post->status = $request->status;
         $post->update();
         return back()->withInput()->with('response', 'Updated successfully');
-
     }
 
     public function createEmployerAccount(Request $request)
@@ -265,7 +260,6 @@ class AdminController extends Controller
         $post->availability = $request->availability;
         $post->update();
         return back()->withInput()->with('response', "Updated successfully");
-
     }
 
     public function userStatusUpdate(Request $request)
@@ -275,7 +269,6 @@ class AdminController extends Controller
         $user->status = $request->status;
         $user->update();
         return back()->withInput()->with('response', "Updated successfully");
-
     }
 
 
@@ -315,7 +308,6 @@ class AdminController extends Controller
         }
         $post->save();
         return back()->withInput()->with('response', "added successfully");
-
     }
 
 
@@ -345,7 +337,7 @@ class AdminController extends Controller
 
             if (!is_dir("category_icons/" . Auth::user()->id . "/")) {
                 $path = "category_icons/" . Auth::user()->id . "/";
-                File::makeDirectory(public_path() . '/' . $path, 0777, true);
+                File::makeDirectory(public_path() . '/' . $path, 0755, true);
             }
 
             $location = public_path('category_icons/' . Auth::user()->id . '/');
@@ -358,8 +350,6 @@ class AdminController extends Controller
         $post->save();
 
         return back()->withInput()->with('response', "added successfully");
-
-
     }
 
     public function artisanServices()
@@ -509,11 +499,9 @@ class AdminController extends Controller
                 break;
             default:
                 return back()->withInput()->with('error', "no operations");
-
         }
 
         return back()->withInput()->with('response', "deleted successfully");
-
     }
 
 
@@ -534,7 +522,7 @@ class AdminController extends Controller
     {
         return $this->adminService->saveIsFeature($request);
     }
-    
+
     public function updateFreelancerVerification($id)
     {
         $user = User::find($id);
@@ -556,17 +544,17 @@ class AdminController extends Controller
 
         if ($request->home) {
             $profilePicture = $request->file('profile_picture');
-                $filename = time() . '.' . $profilePicture->getClientOriginalExtension();
+            $filename = time() . '.' . $profilePicture->getClientOriginalExtension();
 
-                $directoryPath = "profile/pictures/" . $user->id . "/";
-                if (!is_dir($directoryPath)) {
-                    File::makeDirectory(public_path($directoryPath), 0777, true);
-                }
+            $directoryPath = "profile/pictures/" . $user->id . "/";
+            if (!is_dir($directoryPath)) {
+                File::makeDirectory(public_path($directoryPath), 0755, true);
+            }
 
-                $location = public_path($directoryPath);
-                $profilePicture->move($location, $filename);
+            $location = public_path($directoryPath);
+            $profilePicture->move($location, $filename);
 
-                $user->update(['profile_image' => $directoryPath . $filename]);
+            $user->update(['profile_image' => $directoryPath . $filename]);
         } else {
             return back()->withInput()->with('response', 'Please Attach a profile photo');
         }
@@ -576,28 +564,26 @@ class AdminController extends Controller
         // $post->save();
 
         return back()->withInput()->with('response', 'profile picture updated');
-
-
     }
-    
-    public function UpdateUserPhoto(Request $request,$id): RedirectResponse
+
+    public function UpdateUserPhoto(Request $request, $id): RedirectResponse
     {
 
         $user = User::find($id);
 
         if ($request->home) {
             $profilePicture = $request->file('profile_picture');
-                $filename = time() . '.' . $profilePicture->getClientOriginalExtension();
+            $filename = time() . '.' . $profilePicture->getClientOriginalExtension();
 
-                $directoryPath = "profile/pictures/" . $user->id . "/";
-                if (!is_dir($directoryPath)) {
-                    File::makeDirectory(public_path($directoryPath), 0777, true);
-                }
+            $directoryPath = "profile/pictures/" . $user->id . "/";
+            if (!is_dir($directoryPath)) {
+                File::makeDirectory(public_path($directoryPath), 0755, true);
+            }
 
-                $location = public_path($directoryPath);
-                $profilePicture->move($location, $filename);
+            $location = public_path($directoryPath);
+            $profilePicture->move($location, $filename);
 
-                $user->update(['profile_image' => $directoryPath . $filename]);
+            $user->update(['profile_image' => $directoryPath . $filename]);
         } else {
             return back()->withInput()->with('response', 'Please Attach a profile photo');
         }
@@ -607,8 +593,6 @@ class AdminController extends Controller
         // $post->save();
 
         return back()->withInput()->with('response', 'profile picture updated');
-
-
     }
 
     public function getProfilePhoto()
@@ -629,14 +613,14 @@ class AdminController extends Controller
         $special_booking = Booking::paginate(20);
         return view('admin.special-booking', compact('special_booking'));
     }
-    
-    public function getSkills()
-{
-    $skills = Skill::orderBy('created_at', 'desc')->paginate(20);
-    return view('admin.skills', compact('skills'));
-}
 
-    
+    public function getSkills()
+    {
+        $skills = Skill::orderBy('created_at', 'desc')->paginate(20);
+        return view('admin.skills', compact('skills'));
+    }
+
+
     public function createSkill(Request $request)
     {
         $request->validate([
@@ -663,7 +647,7 @@ class AdminController extends Controller
 
         try {
             $skill = Skill::findOrFail($id);
-        //dd($request->all(), $skill);
+            //dd($request->all(), $skill);
             $skill->update([
                 'name' => $request->name,
                 'slug' => strtolower(CommonHelpers::create_unique_slug($request->name, "my_skills", "url")),
@@ -687,27 +671,27 @@ class AdminController extends Controller
         }
     }
     public function editUser($identity)
-{
-    $edit_user = User::where('identity', $identity)
-        ->with([
-            'ArtisanServices',
-            'cityName',
-            'stateName',
-            'countryName',
-            'businessCategory',
-            'mySkills',
-            'experience',
-            'videoBio',
-            'educations',
-            'projects',
-            'languages'
-        ])
-        ->first();
-        
-        return view('admin.edit-user', compact('edit_user'));
-}
+    {
+        $edit_user = User::where('identity', $identity)
+            ->with([
+                'ArtisanServices',
+                'cityName',
+                'stateName',
+                'countryName',
+                'businessCategory',
+                'mySkills',
+                'experience',
+                'videoBio',
+                'educations',
+                'projects',
+                'languages'
+            ])
+            ->first();
 
-public function storeUserDetails(Request $request)
+        return view('admin.edit-user', compact('edit_user'));
+    }
+
+    public function storeUserDetails(Request $request)
     {
         $user = User::find($request->user_id);
         $data = $request->except('skills', 'school', 'project_title', 'language', 'education_id', 'project_id', 'language_id', 'resume');
@@ -826,7 +810,7 @@ public function storeUserDetails(Request $request)
             // Create directory if it does not exist
             $directoryPath = "profile/resume/" . Auth::user()->id . "/";
             if (!is_dir($directoryPath)) {
-                File::makeDirectory(public_path($directoryPath), 0777, true);
+                File::makeDirectory(public_path($directoryPath), 0755, true);
             }
 
             // Define the location where the resume will be stored

@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\Session;
 class CurrencyComposer
 {
     protected $countryCurrencyMap = [
-        'US' => 'USD',
         'NG' => 'NGN',
+        'US' => 'USD',
         'GB' => 'GBP',
         'EU' => 'EUR',
         // Add more countries and their currencies as needed
     ];
 
     protected $currencySymbols = [
-        'USD' => '$',
         'NGN' => '₦',
+        'USD' => '$',
         'GBP' => '£',
         'EUR' => '€',
         // Add more currencies as needed
@@ -64,7 +64,7 @@ class CurrencyComposer
                 $countryCode = $decodedLocation['country_code2'];
                 Session::put('location', $countryCode);
             } else {
-                $countryCode = 'US'; // Default to US if location not found
+                $countryCode = 'NG'; // Default to US if location not found
                 Session::put('location', $countryCode);
             }
         } else {
@@ -72,7 +72,7 @@ class CurrencyComposer
             $countryCode = Session::get('location');
         }
 
-        $currency = session('currency', $this->countryCurrencyMap[$countryCode] ?? 'USD');
+        $currency = session('currency', $this->countryCurrencyMap[$countryCode] ?? 'NGN');
 
         // Fetch conversion rates from the database
         $conversionRates = CurrencyRate::pluck('conversion_rate', 'currency_code')->toArray();

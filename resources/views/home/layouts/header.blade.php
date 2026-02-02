@@ -35,104 +35,12 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.6.0/tinymce.min.js"></script>
-      
+
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 
 </head>
 
 <style>
-    /* Preloader container */
-#preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(112, 147, 163, 0.6); /* Semi-transparent white */
-    backdrop-filter: blur(10px); /* Blur effect */
-    z-index: 9999;
-    transition: opacity 0.5s ease, visibility 0.5s ease; /* Smooth fade-out */
-}
-
-/* Assistant animation */
-.assistant-animation {
-    text-align: center;
-    animation: fadeIn 1s ease-in-out;
-}
-
-/* Assistant avatar */
-.avatar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    animation: zoomInOut 2s ease-in-out infinite; /* Zoom in and out */
-}
-
-/* Keyframes for zoom in and zoom out */
-@keyframes zoomInOut {
-    0%, 100% {
-        transform: scale(1); /* Normal size */
-    }
-    50% {
-        transform: scale(1.2); /* Zoomed in */
-    }
-}
-
-/* Typing dots */
-.typing-dots {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-}
-
-.typing-dots span {
-    width: 10px;
-    height: 10px;
-    background-color: #ece3e3;
-    border-radius: 50%;
-    animation: blink 1.5s infinite;
-}
-
-.typing-dots span:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.typing-dots span:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-/* Loading text */
-.assistant-animation p {
-    margin-top: 10px;
-    font-family: 'Arial', sans-serif;
-    font-size: 18px;
-    color: #333;
-}
-
-/* Keyframes for animations */
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
-
-
-@keyframes blink {
-    0%, 100% {
-        opacity: 0.2;
-    }
-    50% {
-        opacity: 1;
-    }
-}
 
        .input-container {
         display: flex;
@@ -194,7 +102,7 @@
         color: #080429;
     }
 
-    
+
 #youtubePreview iframe {
     border: 1px solid #ccc;
     border-radius: 10px;
@@ -214,25 +122,52 @@
     width: 100%;
     }
 }
+
+
+
+     .ribbon {
+            position: absolute;
+            top: 15px;
+            right: -5px;
+            z-index: 1;
+            overflow: hidden;
+            width: 75px;
+            height: 75px;
+            text-align: right;
+        }
+
+        .ribbon span {
+            font-size: 10px;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 20px;
+            transform: rotate(45deg);
+            width: 100px;
+            display: block;
+            background: #79a70a;
+            box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+            position: absolute;
+            top: 19px;
+            right: -21px;
+        }
+
+        .ribbon span.paid {
+            background: #ff0000; /* Red background for Paid */
+        }
+
+        .ribbon span.free {
+            background: #79a70a; /* Green background for Free */
+        }
+
 </style>
 
 
 
 
-<body>
-    <div id="preloader" class="preloader">
-        <div class="assistant-animation">
-            <div class="avatar">
-                <img src="{{ asset('avata2.png') }}" alt="Assistant Avatar">
-            </div>
-            <div class="typing-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-         
-        </div>
-    </div>
+<body style="visibility: hidden">
+
 
 
 
@@ -305,6 +240,12 @@
                       <a class="nav-link {{Request::segment(2)  === "booking" ? "active" : ""}}" href="{{ route('index.booking.form') }}" role="button"  data-bs-trigger="hover" data-bs-auto-close="outside" aria-expanded="false">Booking</a>
 
                     </li>
+
+
+                    <li class="nav-item dropdown py-lg-2 me-lg-n1 me-xl-0">
+                        <a class="nav-link {{Request::segment(2)  === "contact" ? "active" : ""}}" href="{{ route('index.contact.us') }}" role="button"  data-bs-trigger="hover" data-bs-auto-close="outside" aria-expanded="false">Contact Us</a>
+
+                      </li>
                   </ul>
                 </div>
               </nav>

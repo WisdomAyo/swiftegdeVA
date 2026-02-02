@@ -25,7 +25,7 @@
         @endif
 
         <form role="form" method="post" action="{{ route('user.settings.password.update')}}" class="post">
-            {{ csrf_field() }}
+            {{ csrf_field() }} 
             <div class="row">
                 <div class="col-lg-12 col-md-12">
                     <div class="form-group">

@@ -326,7 +326,7 @@
                                                             action="{{ route('index.staffing.employer.save') }}"
                                                             class="cmb-form _employer_register_fields"
                                                             method="post"
-                                                            id="_employer_register_fields_9499" 
+                                                            id="_employer_register_fields_9499"
                                                             enctype="multipart/form-data"
                                                             encoding="multipart/form-data">
 
@@ -640,6 +640,7 @@
     <link rel="preload" href="asset/css/theme.min.css" as="style">
     <link rel="preload" href="asset/css/theme.rtl.min.css" as="style">
     <link rel="stylesheet" href="asset/css/theme.min.css" id="theme-styles">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <!-- Customizer -->
     <script src="asset/js/customizer.min.js"></script>
@@ -688,6 +689,20 @@
               </button>
           </div>
       @endif
+
+          @if ($errors->any())
+          <div class="notification-alert-danger alert alert-danger alert-dismissible fade show" role="alert">
+              <strong>There were some problems with your submission:</strong>
+              <ul class="mb-0">
+                  @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                  @endforeach
+              </ul>
+              <button type="button" class="btn btn-primary" data-bs-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+              </button>
+          </div>
+          @endif
           <!-- Form -->
           <form class="needs-validation" novalidate="" action="{{ route('createUser') }}" method="post" id="_freelancer_register_fields_8777"  enctype="multipart/form-data"  encoding="multipart/form-data">
             {{ csrf_field() }}
@@ -720,7 +735,7 @@
 
             <div class="position-relative mb-4">
                 <label for="phone" class="form-label">Phone Number</label>
-                <input type="tel" class="form-control form-control-lg @error('phone') is-invalid @enderror" id="phone" data-hash='1nv73cileo1g'  name="phone" value="{{ old('name')}}" required  data-input-format="{&quot;numericOnly&quot;: true, &quot;delimiters&quot;: [&quot;(&quot;, &quot;)&quot;, &quot; &quot;, &quot;-&quot;, &quot; &quot;], &quot;blocks&quot;: [0, 3, 0, 3, 4]}" placeholder="(___) ___-____" required="">
+                <input type="tel" class="form-control form-control-lg @error('phone') is-invalid @enderror" id="phone" data-hash='1nv73cileo1g'  name="phone" value="{{ old('phone')}}" required  data-input-format="{&quot;numericOnly&quot;: true, &quot;delimiters&quot;: [&quot;(&quot;, &quot;)&quot;, &quot; &quot;, &quot;-&quot;, &quot; &quot;], &quot;blocks&quot;: [0, 3, 0, 3, 4]}" placeholder="(___) ___-____" required="">
                 @error('phone')
                 <div class="invalid-tooltip bg-transparent py-0">{{ $errors->first('phone') }} </div>
             @enderror
@@ -772,13 +787,30 @@
 
 
 
+
+
             <div class="d-flex flex-column gap-2 mb-4">
 
               <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="privacy" required="">
+                <input type="checkbox" class="form-check-input" id="privacy" required="true">
                 <label for="privacy" class="form-check-label">I have read and accept the <a class="text-dark-emphasis" href="#!">Privacy Policy</a></label>
               </div>
             </div>
+
+
+            @if (config('services.recaptcha.key'))
+            <div class="g-recaptcha"
+            data-sitekey="{{ config('services.recaptcha.key') }}">
+
+            </div>
+            @error('g-recaptcha-response')
+            <div class="alert alert-danger mt-2">{{ $message }}</div>
+            @enderror
+            @else
+          <p>RECAPTCHA is not configured. Please set the RECAPTCHA_KEY in your .env file.</p>
+        @endif
+
+
             <button type="submit" class="btn btn-lg btn-primary w-100">
               Create an account
               <i class="fi-chevron-right fs-lg ms-1 me-n1"></i>
@@ -826,9 +858,21 @@
 
     <!-- Bootstrap + Theme scripts -->
     <script src="asset/js/theme.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <script>
+        function validateForm() {
+            const privacy = document.getElementById('privacy');
+            if (!privacy.checked) {
+                alert('You must agree to the Privacy Policy before continuing.');
+                return false;
+            }
+            return true;
+            }
+    </script>
 
 
-
+</body>
 </html>
 
 

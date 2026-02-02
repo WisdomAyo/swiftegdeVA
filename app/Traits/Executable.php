@@ -21,7 +21,8 @@ trait Executable
 {
 
 
-    public function createEmployerAccount($request){
+    public function createEmployerAccount($request)
+    {
 
         $validator = Validator::make($request->all(), [
             'fullname' => 'required|string|max:25',
@@ -38,7 +39,7 @@ trait Executable
         $identity = CommonHelpers::generateCramp("user");
         $verifycode = CommonHelpers::code_ref(6);
 
-        $state = States::where('id',$request->state_id)->value('name');
+        $state = States::where('id', $request->state_id)->value('name');
         $post = new User();
         $post->role = "Employer";
         $post->full_name = $request->fullname;
@@ -62,16 +63,16 @@ trait Executable
 
 
         $details    =   [
-            'name'=> $request->fullname,
-            'email'=> $request->email,
-            'link' => url('verify-account/'.$identity.'/'.$verifycode)
+            'name' => $request->fullname,
+            'email' => $request->email,
+            'link' => url('verify-account/' . $identity . '/' . $verifycode)
         ];
 
         Mail::to($request->email)->send(new WelcomeToSwiftedgeVA($details));
 
-        if($post->id) {
+        if ($post->id) {
             return redirect()->route('login')->with('response', 'Your registration was successful, please check your email and verify your account login');
-        }else {
+        } else {
             return back()->withInput()->with('response', 'an error occurred');
         }
     }
@@ -83,7 +84,7 @@ trait Executable
     public function createArtisanServices(Request $request): RedirectResponse
     {
 
-       $slug = Str::slug($request->service_title, '-');
+        $slug = Str::slug($request->service_title, '-');
         $post = new ArtisanServices();
         $post->user_id = Auth::user()->id ?? null;
         $post->title = $request->service_title;
@@ -91,7 +92,7 @@ trait Executable
         $post->full_name =  Auth::user()->full_name ?? null;
         $post->business_category = $request->business_category;
         $post->phone = Auth::user()->phone ?? null;
-        $post->email =Auth::user()->email ?? null;
+        $post->email = Auth::user()->email ?? null;
         $post->experience = $request->experience ?? null;
         $post->cost = $request->cost;
         $post->per_service = $request->per_service ?? null;
@@ -100,15 +101,15 @@ trait Executable
         $post->service_description = $request->service_description;
 
         $image = $request->picture;
-        $filename = time().".".$image->extension();
+        $filename = time() . "." . $image->extension();
         // Create directory if it does not exist
 
-        if (!is_dir("artisan_services/photo/". Auth::user()->id ."/")) {
-            $path = "artisan_services/photo/". Auth::user()->id ."/";
-            File::makeDirectory(public_path() . '/' . $path, 0777, true);
+        if (!is_dir("artisan_services/photo/" . Auth::user()->id . "/")) {
+            $path = "artisan_services/photo/" . Auth::user()->id . "/";
+            File::makeDirectory(public_path() . '/' . $path, 0755, true);
         }
 
-        $location = public_path('artisan_services/photo/'. Auth::user()->id .'/');
+        $location = public_path('artisan_services/photo/' . Auth::user()->id . '/');
         $image->move($location, $filename);
 
         $post->feature_image = $filename;
@@ -119,7 +120,6 @@ trait Executable
         } else {
             return back()->withInput()->with('response', 'an error occurred');
         }
-
     }
 
     public function updateArtisanServices(Request $request): RedirectResponse
@@ -139,27 +139,27 @@ trait Executable
         } else {
             return back()->withInput()->with('response', 'an error occurred');
         }
-
     }
 
 
-    public function UpdateProfilePhoto(Request $request) {
+    public function UpdateProfilePhoto(Request $request)
+    {
 
         $id = Auth::user()->id;
 
         if ($request->home) {
             $image = $request->file('picture');
-            $filename = time().".".$image->getClientOriginalExtension();
+            $filename = time() . "." . $image->getClientOriginalExtension();
             // Create directory if it does not exist
-            if(!is_dir("profile/photo/". Auth::user()->id ."/")) {
-                $path = "profile/photo/". Auth::user()->id ."/";
-                File::makeDirectory(public_path().'/'.$path,0777,true);
+            if (!is_dir("profile/photo/" . Auth::user()->id . "/")) {
+                $path = "profile/photo/" . Auth::user()->id . "/";
+                File::makeDirectory(public_path() . '/' . $path, 0755, true);
             }
 
-            $location = public_path('profile/photo/'. Auth::user()->id .'/');
+            $location = public_path('profile/photo/' . Auth::user()->id . '/');
             $image->move($location, $filename);
-        }else {
-            return back()->withInput()->with('response','Please Attach a profile photo');
+        } else {
+            return back()->withInput()->with('response', 'Please Attach a profile photo');
         }
         // update account information
         $post = User::find($id);
@@ -167,8 +167,5 @@ trait Executable
         $post->save();
 
         return redirect()->route('gateway.redirect');
-
-
     }
-
 }

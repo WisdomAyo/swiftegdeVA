@@ -34,38 +34,34 @@ use Illuminate\Support\Facades\Route;
 
 
 // Route::get('/onboarding', [OnboardingController::class, 'checkOnboarding'])->name('onboarding');
-Route::post('/onboarding/update', [OnboardingController::class, 'update'])->name('onboarding.update');
-Route::get('/onboarding/{step?}', [OnboardingController::class, 'checkOnboarding'])->name('onboarding');
-
-
-
-Route::get('edit-user/{identity}', [AdminController::class, 'editUser'])->name('edit.user')->middleware('auth');
-Route::put('/save-user-details', [AdminController::class, 'storeUserDetails'])->name('save.user.details')->middleware('auth');
 Route::middleware('auth')->group(function () {
-    Route::get('/onboarding/check', [OnboardingController::class, 'checkOnboarding'])->name('onboarding.check'); 
+    Route::get('/onboarding/{step?}', [OnboardingController::class, 'checkOnboarding'])->name('onboarding');
+    Route::get('/onboarding/check', [OnboardingController::class, 'checkOnboarding'])->name('onboarding.check');
     Route::get('/onboarding/country/{id}/states', [OnboardingController::class, 'getStates']);
     Route::get('/onboarding/state/{id}/cities', [OnboardingController::class, 'getCities']);
     Route::post('/onboarding/update', [OnboardingController::class, 'update'])->name('onboarding.update');
 });
 
+
+
+Route::get('edit-user/{identity}', [AdminController::class, 'editUser'])->name('edit.user')->middleware(['auth', 'auth.users']);
+Route::put('/save-user-details', [AdminController::class, 'storeUserDetails'])->name('save.user.details')->middleware(['auth', 'auth.users']);
+
 Route::post('/create-booking', [BookingController::class, 'store'])->name('bookings.store');
 Route::
         namespace('App\Http\Controllers')->group(function () {
 
-            Route::get('/clear-cache', function () {
-                return "done";
-            });
-            Route::group(['middleware' => ['web', 'auth.users', 'auth', 'check.profile'], 'prefix' => 'gateway'], function () {
+            Route::group(['middleware' => ['web', 'auth', 'auth.users', 'check.profile'], 'prefix' => 'gateway'], function () {
                 Route::get('/dashboard', ['uses' => 'Auth\AuthController@redirectDashboard', 'as' => 'gateway.redirect']);
             });
 
             /**
              * USER DASHBOARD ROUTES
              */
-            Route::group(['middleware' => ['web', 'auth.users', 'auth', 'check.profile'], 'prefix' => 'user'], function () {
+            Route::group(['middleware' => ['web', 'auth', 'auth.users', 'check.profile'], 'prefix' => 'user'], function () {
                 Route::get('/dashboard', ['uses' => 'User\UserController@getAdminIndex', 'as' => 'user.home']);
                 Route::get('/jobs', ['uses' => 'User\UserController@getJobs', 'as' => 'user.job']);
-               
+
                 Route::get('/services', ['uses' => 'User\UserController@getMyServices', 'as' => 'user.service']);
                 Route::get('/services/add', ['uses' => 'User\UserController@addServices', 'as' => 'user.service.add']);
                 Route::get('/services/{any}', ['uses' => 'User\UserController@getEditServices', 'as' => 'user.service.edit']);
@@ -87,7 +83,7 @@ Route::
                 Route::delete('/education/{id}', [UserController::class, 'deleteEducation'])->name('education.delete');
                 Route::delete('/experience/{id}', [UserController::class, 'deleteExperience'])->name('experience.delete');
                 Route::delete('/award/{id}', [UserController::class, 'deleteAward'])->name('award.delete');
-              
+
 
                 Route::get('/country/{id}/states', [UserController::class, 'getStates']);
                 Route::get('/state/{id}/cities', [UserController::class, 'getCities']);
@@ -109,7 +105,7 @@ Route::delete('/skills/{id}', ['uses' => 'User\UserController@destroySkills', 'a
             /**
              * EMPLOYERS DASHBOARD ROUTES
              */
-            Route::group(['middleware' => ['web', 'auth.users', 'auth'], 'prefix' => 'employer'], function () {
+            Route::group(['middleware' => ['web', 'auth', 'auth.users'], 'prefix' => 'employer'], function () {
                 Route::get('/dashboard', ['uses' => 'Employer\EmployerController@getAdminIndex', 'as' => 'employer.home']);
                 Route::get('/jobs', ['uses' => 'Employer\EmployerController@getJobs', 'as' => 'employer.job']);
                 Route::get('jobs/request', ['uses' => 'Employer\EmployerController@getAddJobs', 'as' => 'employer.job.request']);
@@ -124,12 +120,7 @@ Route::delete('/skills/{id}', ['uses' => 'User\UserController@destroySkills', 'a
                 Route::get('/profile/change-password', ['uses' => 'Employer\EmployerController@getChangePassword', 'as' => 'employer.change.password']);
                 Route::post('/profile/password/update', ['uses' => 'Employer\EmployerController@ChangeUserPassword', 'as' => 'employer.settings.password.update']);
                 Route::get('/profile/photo/add', ['uses' => 'Employer\EmployerController@getProfilePhoto', 'as' => 'employer.profile.photo']);
-                
                 Route::post('/profile/update', [EmployerController::class, 'updateProfile'])->name('employer.profile.update');
-                
-
-
-
                 Route::get('/country/{id}/states', [EmployerController::class, 'getStates'])->name('getStates');
                 Route::get('/state/{id}/cities', [EmployerController::class, 'getCities'])->name('getCities');
             });
@@ -137,7 +128,7 @@ Route::delete('/skills/{id}', ['uses' => 'User\UserController@destroySkills', 'a
             /**
              * GENERAL ACTION ROUTES
              */
-            Route::group(['middleware' => ['web', 'auth.users', 'auth'], 'prefix' => 'actions'], function () {
+            Route::group(['middleware' => ['web', 'auth', 'auth.users'], 'prefix' => 'actions'], function () {
                 Route::post('delete', ['uses' => 'Admin\AdminController@deletingExe', 'as' => 'delete.exe']);
                 Route::post('updating/user/status', ['uses' => 'Admin\AdminController@userStatusUpdate', 'as' => 'user.exe.status']);
                 Route::post('profile/photo/save', ['uses' => 'Admin\AdminController@UpdateProfilePhoto', 'as' => 'profile.dp.save']);
@@ -148,7 +139,7 @@ Route::delete('/skills/{id}', ['uses' => 'User\UserController@destroySkills', 'a
             /**
              * ADMIN DASHBOARD ROUTES
              */
-            Route::group(['middleware' => ['web', 'auth.users', 'auth'], 'prefix' => 'admin/secure'], function () {
+            Route::group(['middleware' => ['web', 'auth', 'auth.users'], 'prefix' => 'admin/secure'], function () {
                 Route::get('/freelancer-request', [AdminController::class, 'freelancerRequest'])->name('admin.user.request');
                 Route::get('/special-booking', [AdminController::class, 'specialBooking'])->name('admin.user.booking');
                 Route::get('/dashboard', ['uses' => 'Admin\AdminController@getAdminIndex', 'as' => 'admin.home']);

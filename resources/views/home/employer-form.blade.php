@@ -129,7 +129,7 @@
 
             <div class="position-relative mb-4">
                 <label for="phone" class="form-label">Your Office Title (eg CEO)</label>
-                <input type="text" class="form-control form-control-lg @error('phone') is-invalid @enderror" id="title" data-hash='1nv73cileo1g'  name="office_title" value="{{ old('name')}}" required  data-input-format="{&quot;numericOnly&quot;: true, &quot;delimiters&quot;: [&quot;(&quot;, &quot;)&quot;, &quot; &quot;, &quot;-&quot;, &quot; &quot;], &quot;blocks&quot;: [0, 3, 0, 3, 4]}" placeholder="(___) ___-____" required="">
+                <input type="text" class="form-control form-control-lg @error('phone') is-invalid @enderror" id="title" data-hash='1nv73cileo1g'  name="office_title" value="{{ old('name')}}" required  placeholder="Company Name" >
                 @error('office_title')
                 <div class="invalid-tooltip bg-transparent py-0">{{ $errors->first('office_title') }} </div>
             @enderror

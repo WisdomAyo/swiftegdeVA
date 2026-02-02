@@ -55,15 +55,51 @@ class UserController extends Controller
     public function getAdminIndex()
     {
         $user = Auth::user();
-        $messages = ChatMessages::where('sender_id', Auth::user()->id)->orWhere('receiver_id', Auth::user()->id)->count();
-        $jobs = Invoices::where('user_id', Auth::user()->id)->count();
-        $service = ArtisanServices::where('user_id', Auth::user()->id)->count();
-        $galleryImages = ArtisanGallery::where('user_id', Auth::user()->id)->get();
+        $userId = $user->id;
+
+        // Core stats
+        $messages = ChatMessages::where('sender_id', $userId)
+            ->orWhere('receiver_id', $userId)
+            ->count();
+        $jobs = Invoices::where('user_id', $userId)->count();
+        $service = ArtisanServices::where('user_id', $userId)->count();
+        $galleryImages = ArtisanGallery::where('user_id', $userId)->get();
         $identity = $user->identity;
 
+        // Profile completeness calculation
+        $profileCompleteness = \App\Helpers\CommonHelpers::getProfileCompletenessByUserId($userId);
 
+        // User skills
+        $skills = MySkill::where('user_id', $userId)->take(8)->get();
 
-        return view('users.dashboard', compact('service', 'jobs', 'messages', 'galleryImages', 'identity', 'user'));
+        // Recent job applications
+        $recentApplications = JobApplications::where('user_id', $userId)
+            ->with('job')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // Education and experience count
+        $educationCount = \App\Models\Education::where('user_id', $userId)->count();
+        $experienceCount = \App\Models\Experience::where('user_id', $userId)->count();
+
+        // Profile views (if tracked, otherwise set to 0)
+        $profileViews = 0; // Can be implemented with a view tracking system
+
+        return view('users.dashboard', compact(
+            'service',
+            'jobs',
+            'messages',
+            'galleryImages',
+            'identity',
+            'user',
+            'profileCompleteness',
+            'skills',
+            'recentApplications',
+            'educationCount',
+            'experienceCount',
+            'profileViews'
+        ));
     }
 
     public function getJobs()
@@ -89,7 +125,7 @@ class UserController extends Controller
     public function getProfile()
     {
 
-        
+
         $states = State::all();
         $country = Country::all();
         $category = BusinessCategory::all();
@@ -109,28 +145,28 @@ class UserController extends Controller
 
         $socialMedia = json_decode($user->social_media, true);
 
-// Separate handling based on user type
-$socialMedia = json_decode($user->social_media, true) ?? [];
+        // Separate handling based on user type
+        $socialMedia = json_decode($user->social_media, true) ?? [];
 
-// Separate handling based on user type
-$facebook = $socialMedia['facebook'] ?? null;
-$instagram = $socialMedia['instagram'] ?? null;
+        // Separate handling based on user type
+        $facebook = $socialMedia['facebook'] ?? null;
+        $instagram = $socialMedia['instagram'] ?? null;
 
-if ($user->is_influencer) {
-    // Filter and reindex platforms to ensure proper structure
-    $platforms = array_filter($socialMedia, function ($platform) {
-        return is_array($platform) && isset($platform['platform'], $platform['followers'], $platform['handle']);
-    });
-    $platforms = array_values($platforms); // Reindex the array to avoid gaps in indices
-} else {
-    $platforms = [
-        ['platform' => 'Facebook', 'followers' => null, 'handle' => $facebook],
-        ['platform' => 'Instagram', 'followers' => null, 'handle' => $instagram],
-    ];
-}
+        if ($user->is_influencer) {
+            // Filter and reindex platforms to ensure proper structure
+            $platforms = array_filter($socialMedia, function ($platform) {
+                return is_array($platform) && isset($platform['platform'], $platform['followers'], $platform['handle']);
+            });
+            $platforms = array_values($platforms); // Reindex the array to avoid gaps in indices
+        } else {
+            $platforms = [
+                ['platform' => 'Facebook', 'followers' => null, 'handle' => $facebook],
+                ['platform' => 'Instagram', 'followers' => null, 'handle' => $instagram],
+            ];
+        }
 
         // dd($experience);
-        $cities = City::where('state_id', $user->state_id)->get();  
+        $cities = City::where('state_id', $user->state_id)->get();
         $listed = [
             'experience' => $experience,
             'states' => $states,
@@ -143,10 +179,11 @@ if ($user->is_influencer) {
             'skills' => $skills,
             'award' => $award,
             'gallery' => $gallery,
-            'facebook'=> $facebook,
+            'facebook' => $facebook,
             'instagram' => $instagram,
             'platforms' => $platforms,
             'cities' => $cities,
+            'socialMedia' => $socialMedia,
 
         ];
         return view('users.profile', $listed);
@@ -189,7 +226,7 @@ if ($user->is_influencer) {
 
         if (!is_dir("profile/gallery/" . $id . "/")) {
             $path = "profile/gallery/" . $id . "/";
-            File::makeDirectory(public_path() . '/' . $path, 0777, true);
+            File::makeDirectory(public_path() . '/' . $path, 0755, true);
         }
 
         foreach ($files as $file) {
@@ -316,7 +353,7 @@ if ($user->is_influencer) {
     public function getChangePassword()
     {
         $user = Auth::user();
-        
+
         return view('users.change-password', compact('user'));
     }
 
@@ -410,110 +447,129 @@ if ($user->is_influencer) {
 
 
 
-public function storeUser(Request $request)
-{
-    $user = Auth::user();
-    $data = $request->except(
-        'skills', 'school', 'project_title', 'language', 'education_id', 'project_id',
-        'language_id', 'award_id', 'resume', 'title', 'experience_id', 'start_year',
-        'end_year', 'currently_working', 'role', 'service_description', 'profile_image',
-        'delete_profile_image', 'company_logo', 'video_file', 'video_url', 'social_media'
-    );
-      //dd($request);
-    try {
+    public function storeUser(Request $request)
+    {
+        $user = Auth::user();
+        $data = $request->except(
+            'skills',
+            'school',
+            'project_title',
+            'language',
+            'education_id',
+            'project_id',
+            'language_id',
+            'award_id',
+            'resume',
+            'title',
+            'experience_id',
+            'start_year',
+            'end_year',
+            'currently_working',
+            'role',
+            'service_description',
+            'profile_image',
+            'delete_profile_image',
+            'company_logo',
+            'video_file',
+            'video_url',
+            'social_media'
+        );
+        //dd($request);
+        try {
 
-        $rules = [
-            'service_description' => 'nullable|string|max:10000',
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'video_file' => 'nullable|mimes:mp4,mov,avi|max:20480', // 20MB max size
-            'video_url' => 'nullable|url',
-            'facebook' => 'nullable|url',
-            'instagram' => 'nullable|url',
-            'social_media.*.platform' => 'required_if:is_influencer,1|string',
-            'social_media.*.followers' => 'required_if:is_influencer,1|integer|min:0',
-            'social_media.*.handle' => 'required_if:is_influencer,1|string',
-            'skills' => 'nullable|string',
-            'school.*' => 'nullable|string',
-            'project_title.*' => 'nullable|string',
-            'award.*' => 'nullable|string',
-            'title.*' => 'nullable|string',
-            'experience_id.*' => 'nullable|integer',
-            'start_year.*' => 'nullable|integer|min:1900|max:' . date('Y'),
-            'end_year.*' => 'nullable|integer|min:1900|max:' . date('Y'),
-            'resume' => 'nullable|mimes:pdf,doc,docx|max:10240', // 10MB max size
-        ];
+            $rules = [
+                'service_description' => 'nullable|string|max:10000',
+                'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'video_file' => 'nullable|mimes:mp4,mov,avi|max:20480', // 20MB max size
+                'video_url' => 'nullable|url',
+                'facebook' => 'nullable|url',
+                'instagram' => 'nullable|url',
+                'social_media.*.platform' => 'required_if:is_influencer,1|string',
+                'social_media.*.followers' => 'required_if:is_influencer,1|integer|min:0',
+                'social_media.*.handle' => 'required_if:is_influencer,1|string',
+                'skills' => 'nullable|string',
+                'school.*' => 'nullable|string',
+                'project_title.*' => 'nullable|string',
+                'award.*' => 'nullable|string',
+                'title.*' => 'nullable|string',
+                'experience_id.*' => 'nullable|integer',
+                'start_year.*' => 'nullable|integer|min:1900|max:' . date('Y'),
+                'end_year.*' => 'nullable|integer|min:1900|max:' . date('Y'),
+                'resume' => 'nullable|mimes:pdf,doc,docx|max:10240', // 10MB max size
+            ];
 
-        $request->validate($rules);
+            $request->validate($rules);
 
 
-        if (is_null($user->identity)) {
-            $data['identity'] = CommonHelpers::generateCramp("user");
-        }
-
-        // Update basic user information
-        if (!empty($data)) {
-            $user->update($data);
-        }
-
-        // Handle Profile Picture Update
-        if ($request->has('update_profile_image')) {
-            $request->validate(['profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
-            $user->profile_image = $this->handleFileUpload($request->file('profile_image'), 'profile/profile_image', $user->id);
-            $user->save();
-            return redirect()->back()->with('success', 'Profile picture updated successfully.');
-        }
-
-        //Process Video File
-        if ($request->hasFile('video_file')) {
-            $videoFile = $request->file('video_file');
-            Log::info('Uploading video file', [
-                'original_name' => $videoFile->getClientOriginalName(),
-                'size' => $videoFile->getSize(),
-                'mime_type' => $videoFile->getMimeType(),
-            ]);
-
-            $directoryPath = "profile/videos/" . $user->id . "/";
-            $filename = 'video_' . time() . '.' . $videoFile->getClientOriginalExtension();
-
-            // Ensure directory exists
-            if (!is_dir(public_path($directoryPath))) {
-                File::makeDirectory(public_path($directoryPath), 0777, true);
+            if (is_null($user->identity)) {
+                $data['identity'] = CommonHelpers::generateCramp("user");
             }
 
-            // Delete old video if exists
-            if ($user->video_file && File::exists(public_path($user->video_file))) {
-                File::delete(public_path($user->video_file));
+            // Update basic user information
+            if (!empty($data)) {
+                $user->update($data);
             }
 
-            // Save new video file
-            $videoFile->move(public_path($directoryPath), $filename);
+            // Handle Profile Picture Update
+            if ($request->has('update_profile_image')) {
+                $request->validate(['profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
+                $user->profile_image = $this->handleFileUpload($request->file('profile_image'), 'profile/profile_image', $user->id);
+                $user->save();
+                return redirect()->back()->with('success', 'Profile picture updated successfully.');
+            }
 
-            // Update user's video file path in the database
-            $user->update(['video_file' => $directoryPath . $filename]);
-        }
+            //Process Video File
+            if ($request->hasFile('video_file')) {
+                $videoFile = $request->file('video_file');
+                Log::info('Uploading video file', [
+                    'original_name' => $videoFile->getClientOriginalName(),
+                    'size' => $videoFile->getSize(),
+                    'mime_type' => $videoFile->getMimeType(),
+                ]);
+
+                $directoryPath = "profile/videos/" . $user->id . "/";
+                $filename = 'video_' . time() . '.' . $videoFile->getClientOriginalExtension();
+
+                // Ensure directory exists
+                if (!is_dir(public_path($directoryPath))) {
+                    File::makeDirectory(public_path($directoryPath), 0755, true);
+                }
+
+                // Delete old video if exists
+                if ($user->video_file && File::exists(public_path($user->video_file))) {
+                    File::delete(public_path($user->video_file));
+                }
+
+                // Save new video file
+                $videoFile->move(public_path($directoryPath), $filename);
+
+                // Update user's video file path in the database
+                $user->update(['video_file' => $directoryPath . $filename]);
+            }
 
 
-        // Process Video URL
-        if ($request->has('video_url')) {
-            $user->update(['video_url' => $request->video_url]);
-        }
+            // Process Video URL
+            if ($request->has('video_url')) {
+                $user->update(['video_url' => $request->video_url]);
+            }
 
-        // Handle Social Media based on influencer status
-        if ($request->has('is_influencer')) {
-            $isInfluencer = (bool) $request->is_influencer;
-            // Validate social media input for all users
-            $request->validate([
-                'social_media.*.platform' => 'required|string',
-                'social_media.*.handle' => 'required|string',
-                'social_media.*.followers' => 'nullable|integer|min:0',
-            ]);
-            $socialMedia = $request->input('social_media', []); // Unified input for all users
-            // Update the user record
-            $user->update([
-                'is_influencer' => $isInfluencer,
-                'social_media' => json_encode($socialMedia), // Store as JSON
-            ]);
-        }
+            // Handle Social Media based on influencer status
+            if ($request->has('is_influencer')) {
+                $isInfluencer = (bool) $request->is_influencer;
+                // Validate social media input for all users
+                $request->validate([
+                    'social_media.*.platform' => 'required|string',
+                    'social_media.*.handle' => 'required|string',
+                    'social_media.*.followers' => 'nullable|integer|min:0',
+                ]);
+
+                $socialMedia = $request->input('social_media', []); // Unified input for all users
+                // Update the user record
+                $user->update([
+                    'is_influencer' => $isInfluencer,
+                    'social_media' => json_encode($socialMedia), // Store as JSON
+                ]);
+            }
 
             // Process Education Data
             if ($request->has('school')) {
@@ -537,13 +593,13 @@ public function storeUser(Request $request)
 
 
 
-                //Process  Gallery image
+            //Process  Gallery image
             if ($request->hasFile('gallery_images')) {
                 foreach ($request->file('gallery_images') as $file) {
                     $filename = 'SwiftedgeVA-' . time() . '_' . $file->getClientOriginalName();
                     $directoryPath = "profile/gallery/" . $user->id . "/";
                     if (!is_dir(public_path($directoryPath))) {
-                        File::makeDirectory(public_path($directoryPath), 0777, true);
+                        File::makeDirectory(public_path($directoryPath), 0755, true);
                     }
                     $file->move(public_path($directoryPath), $filename);
                     ArtisanGallery::create([
@@ -552,7 +608,7 @@ public function storeUser(Request $request)
                     ]);
                 }
             }
-                // Handle deletion of gallery images
+            // Handle deletion of gallery images
             if ($request->has('delete_gallery_images')) {
                 foreach ($request->delete_gallery_images as $imageId) {
                     $gallery = ArtisanGallery::find($imageId);
@@ -584,7 +640,7 @@ public function storeUser(Request $request)
             }
 
 
-         
+
             if ($request->has('experience')) {
                 foreach ($request->experience as $key => $experience) {
                     if (!empty($experience)) {
@@ -610,7 +666,7 @@ public function storeUser(Request $request)
             }
 
 
-             // Process Skills Data
+            // Process Skills Data
             if ($request->has('skills')) {
                 $submittedSkills = explode(',', $request->skills);
                 $submittedSkills = array_map('trim', $submittedSkills);
@@ -629,102 +685,102 @@ public function storeUser(Request $request)
                     ->delete();
             }
             // Process Resume Upload
-                if ($request->hasFile('resume')) {
-                    $resume = $request->file('resume');
-                    $request->validate([
-                        'resume' => 'mimes:pdf,doc,docx|max:10240', // Max file size: 10MB
-                    ]);
-                    $filename = time() . '.' . $resume->getClientOriginalExtension();
-                    $directoryPath = "profile/resume/" . $user->id . "/";
-                    if (!is_dir(public_path($directoryPath))) {
-                        File::makeDirectory(public_path($directoryPath), 0777, true);
-                    }
-                    $resume->move(public_path($directoryPath), $filename);
-                    $user->update(['resume' => $directoryPath . $filename]);
+            if ($request->hasFile('resume')) {
+                $resume = $request->file('resume');
+                $request->validate([
+                    'resume' => 'mimes:pdf,doc,docx|max:10240', // Max file size: 10MB
+                ]);
+                $filename = time() . '.' . $resume->getClientOriginalExtension();
+                $directoryPath = "profile/resume/" . $user->id . "/";
+                if (!is_dir(public_path($directoryPath))) {
+                    File::makeDirectory(public_path($directoryPath), 0755, true);
                 }
+                $resume->move(public_path($directoryPath), $filename);
+                $user->update(['resume' => $directoryPath . $filename]);
+            }
 
-                // Process Language Data
-                if ($request->has('language')) {
-                    foreach ($request->language as $key => $language) {
-                        if (!empty($language)) {
-                            Language::updateOrCreate(
-                                [
-                                    'user_id' => $user->id,
-                                    'id' => $request->language_id[$key] ?? null,
-                                ],
-                                [
-                                    'language' => $language,
-                                ]
-                            );
-                        }
+            // Process Language Data
+            if ($request->has('language')) {
+                foreach ($request->language as $key => $language) {
+                    if (!empty($language)) {
+                        Language::updateOrCreate(
+                            [
+                                'user_id' => $user->id,
+                                'id' => $request->language_id[$key] ?? null,
+                            ],
+                            [
+                                'language' => $language,
+                            ]
+                        );
                     }
                 }
+            }
 
-                 // Process Project Data
-                    if ($request->has('project_title')) {
-                        foreach ($request->project_title as $key => $title) {
-                            if (!empty($title)) {
-                                Project::updateOrCreate(
-                                    [
-                                        'user_id' => $user->id,
-                                        'id' => $request->project_id[$key] ?? null,
-                                    ],
-                                    [
-                                        'title' => $title,
-                                        'description' => $request->project_description[$key] ?? null,
-                                        'url' => $request->project_url[$key] ?? null,
-                                    ]
-                                );
-                            }
-                        }
+            // Process Project Data
+            if ($request->has('project_title')) {
+                foreach ($request->project_title as $key => $title) {
+                    if (!empty($title)) {
+                        Project::updateOrCreate(
+                            [
+                                'user_id' => $user->id,
+                                'id' => $request->project_id[$key] ?? null,
+                            ],
+                            [
+                                'title' => $title,
+                                'description' => $request->project_description[$key] ?? null,
+                                'url' => $request->project_url[$key] ?? null,
+                            ]
+                        );
                     }
+                }
+            }
 
 
 
 
-        if ($request->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Profile updated successfully.']);
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Profile updated successfully.']);
+            }
+
+            return back()->withInput()->with('response', 'Profile updated successfully.');
+
+
+
+            //    } catch (\Exception $e) {
+            //     $errorMessage = 'Unexpected Error: ' . $e->getMessage();
+            //     Log::error($errorMessage);
+
+            //     // SweetAlert-friendly response for Ajax
+            //     if ($request->ajax()) {
+            //         return response()->json(['success' => false, 'message' => $errorMessage]);
+            //     }
+
+            //     return back()->withErrors($errorMessage);
+            // }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Log the detailed validation errors
+            Log::error('Validation Error: ', $e->errors());
+
+            // Use SweetAlert to display all validation errors
+            $errorMessages = collect($e->errors())
+                ->map(function ($messages, $field) {
+                    return "<strong>{$field}</strong>: " . implode('<br>', $messages);
+                })
+                ->implode('<br><br>');
+
+            return back()->with('validationErrors', $errorMessages);
+        } catch (\Exception $e) {
+            // Log unexpected errors
+            Log::error('Unexpected Error: ', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->with('error', 'An unexpected error occurred. Please try again.');
         }
-
-        return back()->withInput()->with('response', 'Profile updated successfully.');
-
-  
-
-    //    } catch (\Exception $e) {
-    //     $errorMessage = 'Unexpected Error: ' . $e->getMessage();
-    //     Log::error($errorMessage);
-
-    //     // SweetAlert-friendly response for Ajax
-    //     if ($request->ajax()) {
-    //         return response()->json(['success' => false, 'message' => $errorMessage]);
-    //     }
-
-    //     return back()->withErrors($errorMessage);
-    // }
-
-} catch (\Illuminate\Validation\ValidationException $e) {
-    // Log the detailed validation errors
-    Log::error('Validation Error: ', $e->errors());
-
-    // Use SweetAlert to display all validation errors
-    $errorMessages = collect($e->errors())
-        ->map(function ($messages, $field) {
-            return "<strong>{$field}</strong>: " . implode('<br>', $messages);
-        })
-        ->implode('<br><br>');
-
-    return back()->with('validationErrors', $errorMessages);
-} catch (\Exception $e) {
-    // Log unexpected errors
-    Log::error('Unexpected Error: ', [
-        'message' => $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine(),
-    ]);
-
-    return back()->with('error', 'An unexpected error occurred. Please try again.');
-}
-}
+    }
 
 
 
@@ -865,5 +921,4 @@ public function storeUser(Request $request)
             return response()->json(['error' => 'Unable to fetch cities. Please try again.'], 500);
         }
     }
-
 }

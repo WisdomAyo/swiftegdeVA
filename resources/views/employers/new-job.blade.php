@@ -198,6 +198,62 @@
 
 
         <div class="col-lg-9">
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    @if (session('success'))
+                        Swal.fire({
+                            title: 'Success!',
+                            text: '{{ session('success') }}',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    @endif
+    
+                    @if (session('validationErrors'))
+                        Swal.fire({
+                            title: 'Validation Error',
+                            html: `{!! nl2br(e(json_encode(session('validationErrors'), JSON_PRETTY_PRINT))) !!}`,
+                            icon: 'error',
+                            confirmButtonText: 'Fix Errors'
+                        });
+                    @elseif ($errors->any())
+                        Swal.fire({
+                            title: 'Error',
+                            text: '{{ $errors->first() }}',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    @endif
+                });
+            </script>
+
+
+@if (session('response'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            title: 'Success',
+            text: '{{ session('response') }}',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    });
+</script>
+@endif
+
+@if (session('error'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            title: 'Error',
+            text: '{{ session('error') }}',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    });
+</script>
+@endif
         <form  method="post" action="{{ route('employer.job.save')}}"  enctype="multipart/form-data">
             {{ csrf_field() }}
 
@@ -307,10 +363,11 @@
                   <div class=" col form-floating mb-3">
                     <select class="form-select" id="fl-select" aria-label="Floating label select" name="itSkills">
 
-                        <option value="Skilled" selected="selected">Skilled</option>
-                        <option value="Semi skilled" selected="selected">Semi skilled</option>
-                        <option value="Internship/Graduate Training" selected="selected">Internship/Graduate Training</option>
-                        <option value="Unskilled" selected="selected">Unskilled</option>
+                        <option value="Beginner" selected="selected">Beginner</option>
+                        <option value="Intermidiate" selected="selected">Intermidiate</option>
+                        <option value="Advance" selected="selected">Advance</option>
+                        <option value="Expert" selected="selected">Expert</option>
+                        <option value="Intern" selected="selected">Intern</option>
                     </select>
                     <label for="fl-select">Skill Level</label>
                   </div>
@@ -324,17 +381,17 @@
                   </div>
 
                   <div class="col form-floating mb-3">
-                    <input class="form-control" type="text" id="fl-text" placeholder="Job Title" name="max_amount">
+                    <input class="form-control" type="number" id="fl-text" placeholder="Job Title" name="max_amount">
                     <label for="fl-text">Proposed Maximum Salary </label>
                   </div>
 
                   <div class="col form-floating mb-3">
-                    <input class="form-control" type="text" id="fl-text" placeholder="Job Title" name="min_amount">
+                    <input class="form-control" type="number" id="fl-text" placeholder="Job Title" name="min_amount">
                     <label for="fl-text">Proposed Minimum Salary</label>
                   </div>
 
                   <div class="col form-floating mb-3">
-                    <input class="form-control" type="date" id="fl-text" placeholder="Job Title" name="application_deadline" value="{{$job->application_deadline}}">
+                    <input class="form-control" type="text" id="fl-text"  name="application_deadline" data-datepicker="{&quot;dateFormat&quot;: &quot;M j, Y&quot;}" placeholder="Date" value="{{$job->application_deadline}}">
                     <label for="fl-text">Application Deadline</label>
                   </div>
 

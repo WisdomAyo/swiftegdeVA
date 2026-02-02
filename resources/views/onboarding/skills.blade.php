@@ -354,7 +354,9 @@
                         <input type="hidden" name="skills" id="skills-hidden">
                         <input type="text" id="skill-input" class="tag-input form-select form-select-lg" placeholder="Enter skills..."
                             autocomplete="off">
+                            
                     </div>
+                    <small class="fs-xs"> Note: if your skill is not in the options provided, kindly add your preferred skill and press enter</small>
                     <div id="suggestions" class="suggestions-list"></div>
 
                    

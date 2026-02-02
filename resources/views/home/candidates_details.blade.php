@@ -204,7 +204,7 @@
                         @endforeach
 
 
-                        
+
                             <h2 class="h4 pt-4 pt-md-5 mt-3 mt-md-0">Gallery</h2>
                             {{-- <p class="fs-sm mb-0">The maximum photo size is 8 MB. Formats: jpeg, jpg, png. Put the main picture first.</p> --}}
                             <p class="fs-sm">The maximum video size is 10 MB. Formats: mp4, mov.</p>
@@ -231,7 +231,7 @@
                                     @endif
                                 </div>
                             </div>
-                     
+
 
                         <h2 class="h4 pt-4 pt-md-5 mt-3 mt-md-0">Awards</h2>
                         @foreach ($awards as $awd)
@@ -527,7 +527,7 @@
                                                             target="_blank">{{ $social['handle'] }}</a>
                                                         ({{ $social['followers'] }} followers)
                                                         @endif
-                                                        
+
                                                     </li>
                                                 @endforeach
                                             </ul>

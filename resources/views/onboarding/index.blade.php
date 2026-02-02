@@ -69,10 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
                   &quot;searchEnabled&quot;: true
                 }" aria-label="Select Platform" name="social_media[${index}][platform]" id="platform-${index}" required>
                 <option value="">Select your Handle </option>
-                  <option value="instagram">Instagram</option>
-                  <option value="facebook">Facebook</option>
-                  <option value="tiktok">Tiktok</option>
-                  <option value="snapchat">Snapchat</option>
+                  <option value="Instagram">Instagram</option>
+                  <option value="Facebook">Facebook</option>
+                  <option value="Tiktok">Tiktok</option>
+                  <option value="Snapchat">Snapchat</option>
                 </select>
             </div>
             <div class="col-md-4">

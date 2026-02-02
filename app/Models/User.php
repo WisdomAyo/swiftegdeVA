@@ -52,9 +52,9 @@ class User extends Authenticatable implements JWTSubject
         'status',
         'usd_rate',
         'gbp_rate',
-        'eur_rate', 
+        'eur_rate',
         'company_logo',
-        'video_url', 
+        'video_url',
         'video_file',
         'ngn_rate',
         'resume',
@@ -143,7 +143,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function mySkills()
     {
-        return $this->hasMany(MySkill::class, 'user_id'); 
+        return $this->hasMany(MySkill::class, 'user_id');
     }
 
 
@@ -180,20 +180,6 @@ class User extends Authenticatable implements JWTSubject
 public function gallery()
 {
     return $this->hasMany(ArtisanGallery::class);
-}
-
-
-    protected static function boot()
-{
-    parent::boot();
-
-    static::updating(function ($user) {
-        \Log::info('Updating user:', $user->toArray());
-    });
-
-    static::updated(function ($user) {
-        \Log::info('User updated:', $user->toArray());
-    });
 }
 
 }

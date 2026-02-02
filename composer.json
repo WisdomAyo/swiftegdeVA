@@ -15,7 +15,7 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "stevebauman/location": "^7.3",
-        "tymon/jwt-auth": "dev-develop",
+        "tymon/jwt-auth": "^1.0",
         "unicodeveloper/laravel-paystack": "^1.2"
     },
     "require-dev": {
@@ -67,6 +67,6 @@
         "sort-packages": true,
         "platform-check": false
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
